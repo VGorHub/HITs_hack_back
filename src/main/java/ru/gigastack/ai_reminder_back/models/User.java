@@ -30,8 +30,10 @@ public class User implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
+/*
     @Column(name = "email", unique = true, nullable = false)
     private String email;
+*/
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)

@@ -35,9 +35,9 @@ public class UserService {
             throw new RuntimeException("Пользователь с таким именем уже существует");
         }
 
-        if (repository.existsByEmail(user.getEmail())) {
+       /* if (repository.existsByEmail(user.getEmail())) {
             throw new RuntimeException("Пользователь с таким email уже существует");
-        }
+        }*/
 
         return save(user);
     }
