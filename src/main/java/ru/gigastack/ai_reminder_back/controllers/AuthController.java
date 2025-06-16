@@ -1,6 +1,7 @@
 package ru.gigastack.ai_reminder_back.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +18,10 @@ import ru.gigastack.ai_reminder_back.service.UserService;
 @RequiredArgsConstructor
 @Tag(name = "Аутентификация")
 public class AuthController {
+
     private final AuthenticationService authenticationService;
-    private final UserService service;
+    private final UserService           service;
+
 
     @Operation(summary = "Регистрация пользователя")
     @PostMapping("/sign-up")
@@ -31,23 +34,33 @@ public class AuthController {
     public JwtAuthenticationResponse signIn(@RequestBody @Valid SignInRequest request) {
         return authenticationService.signIn(request);
     }
+
+
+    @Operation(
+            summary = "Пример – нужен авторизованный пользователь",
+            security = @SecurityRequirement(name = "BearerAuth")
+    )
     @GetMapping
-    @Operation(summary = "Доступен только авторизованным пользователям")
     public String example() {
         return "Hello, world!";
     }
 
-    @GetMapping("/admin")
-    @Operation(summary = "Доступен только авторизованным пользователям с ролью ADMIN")
+    @Operation(
+            summary = "Пример – нужна роль ADMIN",
+            security = @SecurityRequirement(name = "BearerAuth")
+    )
     @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin")
     public String exampleAdmin() {
         return "Hello, admin!";
     }
 
+    @Operation(
+            summary = "Получить роль ADMIN (для демонстрации)",
+            security = @SecurityRequirement(name = "BearerAuth")
+    )
     @GetMapping("/get-admin")
-    @Operation(summary = "Получить роль ADMIN (для демонстрации)")
     public void getAdmin() {
         service.getAdmin();
     }
-
 }
