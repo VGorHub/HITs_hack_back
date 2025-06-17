@@ -3,6 +3,7 @@ package ru.gigastack.ai_reminder_back.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -28,10 +29,14 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserService              userService;
     private final JsonAuthHandlers         jsonHandlers;
+    private final JwtTokenProvider tokenProvider;
 
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(tokenProvider);
+    }
     /* ---------- основная цепочка ---------- */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -47,12 +52,15 @@ public class SecurityConfiguration {
                     return cfg;
                 }))
 
+
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/internal/telegram/chat",
                                 "/internal/telegram/user-info").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/ws/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/ws/**").permitAll()
                         .anyRequest().authenticated())
 
                 .exceptionHandling(ex -> ex
@@ -61,8 +69,11 @@ public class SecurityConfiguration {
 
                 .sessionManagement(sm -> sm.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
+                .addFilterBefore(
+                        jwtAuthenticationFilter(),
+                        UsernamePasswordAuthenticationFilter.class
+                );
         return http.build();
     }
 

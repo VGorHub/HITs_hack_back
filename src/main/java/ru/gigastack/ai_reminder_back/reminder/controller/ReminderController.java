@@ -10,10 +10,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ru.gigastack.ai_reminder_back.exception.ApiError;
-import ru.gigastack.ai_reminder_back.models.User;
 import ru.gigastack.ai_reminder_back.reminder.dto.*;
 import ru.gigastack.ai_reminder_back.reminder.service.ReminderService;
 
@@ -28,9 +29,19 @@ public class ReminderController {
 
     private final ReminderService service;
 
-    /* util */
+    /* ---------- util ---------- */
+
+    /** Достаём userId, который фильтр положил в principal (Long или String). */
     private Long getUserId() {
-        return ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || auth.getPrincipal() == null) {
+            throw new AccessDeniedException("Unauthenticated");
+        }
+
+        Object principal = auth.getPrincipal();
+        return (principal instanceof Long id)
+                ? id
+                : Long.valueOf(principal.toString());
     }
 
     /* ---------- create ---------- */
@@ -60,7 +71,8 @@ public class ReminderController {
     )
     @PostMapping
     public ResponseEntity<ReminderResponse> create(@RequestBody @Valid ReminderRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(getUserId(), request));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(service.create(getUserId(), request));
     }
 
     /* ---------- read one ---------- */
@@ -93,7 +105,7 @@ public class ReminderController {
     /* ---------- update ---------- */
 
     @Operation(
-            summary     = "Обновить напоминание",
+            summary   = "Обновить напоминание",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK",
                             content = @Content(schema = @Schema(implementation = ReminderResponse.class))),

@@ -1,69 +1,63 @@
 package ru.gigastack.ai_reminder_back.security;
 
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.gigastack.ai_reminder_back.service.UserService;
 
-import java.io.IOException;
-
-@Component
+@Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    public static final String BEARER_PREFIX = "Bearer ";
-    public static final String HEADER_NAME = "Authorization";
-    private final JwtService jwtService;
-    private final UserService userService;
+
+    private final JwtTokenProvider tokenProvider;
 
     @Override
-    protected void doFilterInternal(
-            @NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain
-    ) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) {
+        try {
+            String token = resolveToken(request);
+            if (StringUtils.hasText(token) && tokenProvider.validate(token)) {
 
-        // Получаем токен из заголовка
-        var authHeader = request.getHeader(HEADER_NAME);
-        if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, BEARER_PREFIX)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        // Обрезаем префикс и получаем имя пользователя из токена
-        var jwt = authHeader.substring(BEARER_PREFIX.length());
-        var username = jwtService.extractUserName(jwt);
-
-        if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userService
-                    .userDetailsService()
-                    .loadUserByUsername(username);
-
-            // Если токен валиден, то аутентифицируем пользователя
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                SecurityContext context = SecurityContextHolder.createEmptyContext();
-
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
+                var auth = new UsernamePasswordAuthenticationToken(
+                        tokenProvider.getUserId(token),      // principal
+                        null,                                // credentials
+                        tokenProvider.getAuthorities(token)  // roles
                 );
-
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                context.setAuthentication(authToken);
-                SecurityContextHolder.setContext(context);
+                auth.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request)
+                );
+                SecurityContextHolder.getContext().setAuthentication(auth);
             }
+        } catch (Exception ex) {
+            log.warn("JWT auth failed: {}", ex.getMessage());
         }
-        filterChain.doFilter(request, response);
+
+        try {
+            filterChain.doFilter(request, response);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 1) Header  Authorization: Bearer &lt;jwt&gt;<br>
+     * 2) Query-param ?token=&lt;jwt&gt;  — используется браузером при WebSocket-handshake.
+     */
+    private String resolveToken(HttpServletRequest req) {
+        // #1  — стандартный вариант
+        String bearer = req.getHeader("Authorization");
+        if (StringUtils.hasText(bearer) && bearer.startsWith("Bearer ")) {
+            return bearer.substring(7);
+        }
+        // #2  — fallback для /ws?token=<jwt>
+        String qp = req.getParameter("token");
+        return StringUtils.hasText(qp) ? qp : null;
     }
 }

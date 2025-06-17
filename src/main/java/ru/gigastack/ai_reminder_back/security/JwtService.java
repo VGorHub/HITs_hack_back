@@ -126,4 +126,18 @@ public class JwtService {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSigningKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+    public boolean validateToken(String token) {
+        // Проверяем только срок годности; если нужна доп.-логика — добавьте.
+        return !isTokenExpired(token);
+    }
+
+    public Long getUserId(String token) {
+        // id сохраняли в claim "id" при генерации токена
+        return extractClaim(token, c -> c.get("id", Long.class));
+    }
+
+    public String getAuthorities(String token) {
+        // role кладётся строкой, например ROLE_USER
+        return extractClaim(token, c -> c.get("role", String.class));
+    }
 }

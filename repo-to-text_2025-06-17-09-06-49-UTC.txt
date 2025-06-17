@@ -9,6 +9,7 @@ Directory Structure:
 ├── amplicode.xml
 ├── application.yml
 ├── build.gradle
+├── docker-compose.yml
 │   └── gradle/wrapper
 │       ├── gradle/wrapper/gradle-wrapper.jar
 │       └── gradle/wrapper/gradle-wrapper.properties
@@ -88,7 +89,10 @@ Directory Structure:
     │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/security/JsonAuthHandlers.java
     │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/security/JwtAuthenticationFilter.java
     │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/security/JwtService.java
-    │   │               │   └── src/main/java/ru/gigastack/ai_reminder_back/security/SecurityConfiguration.java
+    │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/security/JwtTokenProvider.java
+    │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/security/SecurityConfiguration.java
+    │   │               │   └── src/main/java/ru/gigastack/ai_reminder_back/security/ws
+    │   │               │       └── src/main/java/ru/gigastack/ai_reminder_back/security/ws/JwtHandshakeInterceptor.java
     │   │               ├── src/main/java/ru/gigastack/ai_reminder_back/service
     │   │               │   └── src/main/java/ru/gigastack/ai_reminder_back/service/UserService.java
     │   │               └── src/main/java/ru/gigastack/ai_reminder_back/telegram
@@ -462,6 +466,11 @@ liquibase {
 				"hibernate:spring:ru.gigastack.ai_reminder_back?dialect=org.hibernate.dialect.PostgreSQLDialect"
 	}
 }
+```
+
+Contents of docker-compose.yml:
+```
+
 ```
 
 Contents of application.yml:
@@ -1020,24 +1029,32 @@ package ru.gigastack.ai_reminder_back.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.web.socket.config.annotation.*;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import ru.gigastack.ai_reminder_back.security.ws.JwtHandshakeInterceptor;
 
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final WebSocketProps props;
+    private final WebSocketProps          props;
+    private final JwtHandshakeInterceptor jwtHandshakeInterceptor;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry cfg) {
-        cfg.enableSimpleBroker(props.getPrefix().getTopic());   // /topic/**
+        cfg.enableSimpleBroker("/queue", "/topic");  // in-memory broker
+        cfg.setUserDestinationPrefix("/user");       // <– ключевая строка!
         cfg.setApplicationDestinationPrefixes(props.getPrefix().getApp()); // /app/**
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry reg) {
-        reg.addEndpoint(props.getEndpoint()).setAllowedOriginPatterns("*").withSockJS();
+        reg.addEndpoint(props.getEndpoint())
+                .setAllowedOriginPatterns("*")
+                .addInterceptors(jwtHandshakeInterceptor) // <– привязали JWT к сессии
+                .withSockJS();
     }
 }
 ```
@@ -1171,6 +1188,20 @@ public class JwtService {
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSigningKey);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+    public boolean validateToken(String token) {
+        // Проверяем только срок годности; если нужна доп.-логика — добавьте.
+        return !isTokenExpired(token);
+    }
+
+    public Long getUserId(String token) {
+        // id сохраняли в claim "id" при генерации токена
+        return extractClaim(token, c -> c.get("id", Long.class));
+    }
+
+    public String getAuthorities(String token) {
+        // role кладётся строкой, например ROLE_USER
+        return extractClaim(token, c -> c.get("role", String.class));
     }
 }
 ```
@@ -1324,71 +1355,104 @@ Contents of src/main/java/ru/gigastack/ai_reminder_back/security/JwtAuthenticati
 package ru.gigastack.ai_reminder_back.security;
 
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.gigastack.ai_reminder_back.service.UserService;
 
-import java.io.IOException;
-
-@Component
+@Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    public static final String BEARER_PREFIX = "Bearer ";
-    public static final String HEADER_NAME = "Authorization";
-    private final JwtService jwtService;
-    private final UserService userService;
+
+    private final JwtTokenProvider tokenProvider;
 
     @Override
-    protected void doFilterInternal(
-            @NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain
-    ) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) {
+        try {
+            String token = resolveToken(request);
+            if (StringUtils.hasText(token) && tokenProvider.validate(token)) {
 
-        // Получаем токен из заголовка
-        var authHeader = request.getHeader(HEADER_NAME);
-        if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, BEARER_PREFIX)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        // Обрезаем префикс и получаем имя пользователя из токена
-        var jwt = authHeader.substring(BEARER_PREFIX.length());
-        var username = jwtService.extractUserName(jwt);
-
-        if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userService
-                    .userDetailsService()
-                    .loadUserByUsername(username);
-
-            // Если токен валиден, то аутентифицируем пользователя
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                SecurityContext context = SecurityContextHolder.createEmptyContext();
-
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
+                var auth = new UsernamePasswordAuthenticationToken(
+                        tokenProvider.getUserId(token),      // principal
+                        null,                                // credentials
+                        tokenProvider.getAuthorities(token)  // roles
                 );
-
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                context.setAuthentication(authToken);
-                SecurityContextHolder.setContext(context);
+                auth.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request)
+                );
+                SecurityContextHolder.getContext().setAuthentication(auth);
             }
+        } catch (Exception ex) {
+            log.warn("JWT auth failed: {}", ex.getMessage());
         }
-        filterChain.doFilter(request, response);
+
+        try {
+            filterChain.doFilter(request, response);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
+
+    /**
+     * 1) Header  Authorization: Bearer &lt;jwt&gt;<br>
+     * 2) Query-param ?token=&lt;jwt&gt;  — используется браузером при WebSocket-handshake.
+     */
+    private String resolveToken(HttpServletRequest req) {
+        // #1  — стандартный вариант
+        String bearer = req.getHeader("Authorization");
+        if (StringUtils.hasText(bearer) && bearer.startsWith("Bearer ")) {
+            return bearer.substring(7);
+        }
+        // #2  — fallback для /ws?token=<jwt>
+        String qp = req.getParameter("token");
+        return StringUtils.hasText(qp) ? qp : null;
+    }
+}
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/security/JwtTokenProvider.java:
+```
+package ru.gigastack.ai_reminder_back.security;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Component;
+
+import java.util.Collection;
+import java.util.List;
+
+/**
+ * Адаптер над существующим JwtService, чтобы фильтр ничего не знал
+ * о деталях реализации.
+ */
+@Component
+@RequiredArgsConstructor
+public class JwtTokenProvider {
+
+    private final JwtService jwtService;   // ← уже есть в проекте
+
+    public boolean validate(String token) {
+        return jwtService.validateToken(token);
+    }
+
+    public Long getUserId(String token) {
+        return jwtService.getUserId(token);
+    }
+
+    public Collection<? extends GrantedAuthority> getAuthorities(String token) {
+        // из обёртки JwtService получаем роль строкой
+        String role = jwtService.getAuthorities(token);   // ROLE_USER, ROLE_ADMIN …
+        return List.of(new SimpleGrantedAuthority(role));
+    }
+
 }
 ```
 
@@ -1399,6 +1463,7 @@ package ru.gigastack.ai_reminder_back.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -1424,10 +1489,14 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserService              userService;
     private final JsonAuthHandlers         jsonHandlers;
+    private final JwtTokenProvider tokenProvider;
 
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(tokenProvider);
+    }
     /* ---------- основная цепочка ---------- */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -1443,12 +1512,15 @@ public class SecurityConfiguration {
                     return cfg;
                 }))
 
+
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/internal/telegram/chat",
                                 "/internal/telegram/user-info").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/ws/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/ws/**").permitAll()
                         .anyRequest().authenticated())
 
                 .exceptionHandling(ex -> ex
@@ -1457,8 +1529,11 @@ public class SecurityConfiguration {
 
                 .sessionManagement(sm -> sm.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
+                .addFilterBefore(
+                        jwtAuthenticationFilter(),
+                        UsernamePasswordAuthenticationFilter.class
+                );
         return http.build();
     }
 
@@ -1485,6 +1560,84 @@ public class SecurityConfiguration {
 
 ```
 
+Contents of src/main/java/ru/gigastack/ai_reminder_back/security/ws/JwtHandshakeInterceptor.java:
+```
+package ru.gigastack.ai_reminder_back.security.ws;
+
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.springframework.web.socket.WebSocketHandler;
+import org.springframework.web.socket.server.HandshakeInterceptor;
+import ru.gigastack.ai_reminder_back.security.JwtTokenProvider;
+
+import java.util.Map;
+
+/**
+ * Поднимает аутентификацию на этапе WS-handshake.<br>
+ * Источник токена: <br>
+ *   1) Header <code>Authorization: Bearer &lt;jwt&gt;</code>  <br>
+ *   2) query-param <code>?token=&lt;jwt&gt;</code> — удобно для SockJS.
+ */
+@Component
+@RequiredArgsConstructor
+public class JwtHandshakeInterceptor implements HandshakeInterceptor {
+
+    private final JwtTokenProvider tokenProvider;
+
+    @Override
+    public boolean beforeHandshake(@NonNull  ServerHttpRequest  request,
+                                   @NonNull  ServerHttpResponse response,
+                                   @NonNull  WebSocketHandler   wsHandler,
+                                   @NonNull  Map<String, Object> attributes) {
+
+        if (request instanceof ServletServerHttpRequest servletRequest) {
+            HttpServletRequest http = servletRequest.getServletRequest();
+            String token = resolveToken(http);
+
+            if (StringUtils.hasText(token) && tokenProvider.validate(token)) {
+                var auth = new UsernamePasswordAuthenticationToken(
+                        tokenProvider.getUserId(token).toString(),   // principal — строкой
+                        null,
+                        tokenProvider.getAuthorities(token)
+                );
+                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(http));
+                SecurityContextHolder.getContext().setAuthentication(auth);
+
+                /* важно: положим Authentication в атрибуты сессии,
+                   чтобы Spring восстановил Principal для последующих STOMP-кадров */
+                attributes.put("SPRING.AUTHENTICATION", auth);
+            }
+        }
+        return true;   // всегда пропускаем handshake, даже если токена нет
+    }
+
+    @Override public void afterHandshake(@NonNull  ServerHttpRequest  request,
+                                         @NonNull  ServerHttpResponse response,
+                                         @NonNull  WebSocketHandler   wsHandler,
+                                         @Nullable Exception ex) { /* no-op */ }
+
+    /* ---------- util ---------- */
+
+    private String resolveToken(HttpServletRequest req) {
+        String bearer = req.getHeader("Authorization");
+        if (StringUtils.hasText(bearer) && bearer.startsWith("Bearer ")) {
+            return bearer.substring(7);
+        }
+        return req.getParameter("token");   // fallback
+    }
+}
+```
+
 Contents of src/main/java/ru/gigastack/ai_reminder_back/notification/.DS_Store:
 ```
 [Could not decode file contents]
@@ -1495,25 +1648,19 @@ Contents of src/main/java/ru/gigastack/ai_reminder_back/notification/dto/Reminde
 ```
 package ru.gigastack.ai_reminder_back.notification.dto;
 
-import lombok.*;
-
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
 
 /**
  * То, что реально уходит во фронт / Telegram.
  * Здесь только те данные, которые нужны каналу доставки.
  */
-
-import java.time.OffsetDateTime;
-
 public record ReminderNotification(
         Long          reminderId,
         Long          userId,
         String        title,
         String        description,
-        OffsetDateTime scheduledAt
+        OffsetDateTime scheduledAt,
+        String        location
 ) {}
 ```
 
@@ -1599,10 +1746,8 @@ package ru.gigastack.ai_reminder_back.notification.channel;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Primary;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
-import ru.gigastack.ai_reminder_back.config.WebSocketProps;
 import ru.gigastack.ai_reminder_back.notification.dto.ReminderNotification;
 import ru.gigastack.ai_reminder_back.notification.service.WebSocketGateway;
 
@@ -1612,14 +1757,14 @@ import ru.gigastack.ai_reminder_back.notification.service.WebSocketGateway;
 public class WebSocketGatewayStomp implements WebSocketGateway {
 
     private final SimpMessagingTemplate template;
-    private final WebSocketProps        props;
+
+    /** Куда подписывается фронт: <code>/user/queue/notifications</code> */
+    private static final String DESTINATION = "/queue/notifications";
 
     @Override
     public void pushToUser(Long userId, ReminderNotification payload) {
-        String destination = "%s/notifications/%d"
-                .formatted(props.getPrefix().getTopic(), userId);   // /topic/notifications/42
-        template.convertAndSend(destination, payload);
-        log.debug("[WS] → {} {}", destination, payload);
+        template.convertAndSendToUser(userId.toString(), DESTINATION, payload);
+        log.debug("[WS] → user={} {}", userId, payload);
     }
 }
 ```
@@ -1744,7 +1889,8 @@ public class OutboxNotifier {
                     on.getUserId(),
                     "(unknown)",
                     null,
-                    null
+                    null,
+                    null              // <-- location по-умолчанию
             );
         }
     }
@@ -1874,10 +2020,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ru.gigastack.ai_reminder_back.exception.ApiError;
-import ru.gigastack.ai_reminder_back.models.User;
 import ru.gigastack.ai_reminder_back.reminder.dto.*;
 import ru.gigastack.ai_reminder_back.reminder.service.ReminderService;
 
@@ -1892,9 +2039,19 @@ public class ReminderController {
 
     private final ReminderService service;
 
-    /* util */
+    /* ---------- util ---------- */
+
+    /** Достаём userId, который фильтр положил в principal (Long или String). */
     private Long getUserId() {
-        return ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || auth.getPrincipal() == null) {
+            throw new AccessDeniedException("Unauthenticated");
+        }
+
+        Object principal = auth.getPrincipal();
+        return (principal instanceof Long id)
+                ? id
+                : Long.valueOf(principal.toString());
     }
 
     /* ---------- create ---------- */
@@ -1924,7 +2081,8 @@ public class ReminderController {
     )
     @PostMapping
     public ResponseEntity<ReminderResponse> create(@RequestBody @Valid ReminderRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(getUserId(), request));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(service.create(getUserId(), request));
     }
 
     /* ---------- read one ---------- */
@@ -1957,7 +2115,7 @@ public class ReminderController {
     /* ---------- update ---------- */
 
     @Operation(
-            summary     = "Обновить напоминание",
+            summary   = "Обновить напоминание",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK",
                             content = @Content(schema = @Schema(implementation = ReminderResponse.class))),
@@ -2118,9 +2276,10 @@ public class ReminderServiceImpl implements ReminderService {
     private final ReminderRepository repository;
     private final OutboxRepository   outboxRepository;
     private final ReminderMapper     mapper;
-    private final ObjectMapper mapperJson = new ObjectMapper();  // свой ObjectMapper
+    /** Берём уже настроенный spring-овский mapper (JavaTimeModule + ISO-8601). */
+    private final ObjectMapper       mapperJson;
 
-
+    /* ---------- create ---------- */
     @Override
     @Transactional
     public ReminderResponse create(Long userId, ReminderRequest req) {
@@ -2133,24 +2292,24 @@ public class ReminderServiceImpl implements ReminderService {
 
         Reminder saved = repository.save(reminder);
 
-        // --- формируем payload для каналов доставки -----------------
+        /* ––– payload для каналов доставки ––– */
         ReminderNotification dto = new ReminderNotification(
                 saved.getId(),
                 userId,
                 saved.getTitle(),
                 saved.getDescription(),
-                saved.getScheduledAt()
+                saved.getScheduledAt(),
+                saved.getLocation()
         );
 
         String json;
         try {
             json = mapperJson.writeValueAsString(dto);
         } catch (Exception e) {
-            json = "{}";          // fallback, но теперь исключения не ожидаем
             throw new IllegalStateException("Failed to serialize ReminderNotification", e);
         }
 
-        // --- outbox --------------------------------------------------
+        /* ––– outbox ––– */
         OutboxNotification on = OutboxNotification.builder()
                 .reminderId(saved.getId())
                 .userId(userId)
