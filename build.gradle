@@ -1,28 +1,19 @@
-
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.0'
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'org.asciidoctor.jvm.convert' version '3.3.2'
-	id 'org.liquibase.gradle' version '2.2.1'
+	id 'org.liquibase.gradle'       version '2.2.1'
 }
 
-group = 'ru.gigastack'
+group   = 'ru.gigastack'
 version = '0.0.1-SNAPSHOT'
 
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
-}
+java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
 
-repositories {
-	mavenCentral()
-}
+repositories { mavenCentral() }
 
-ext {
-	set('snippetsDir', file("build/generated-snippets"))
-}
+ext { set('snippetsDir', file("build/generated-snippets")) }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -33,49 +24,45 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
-	// switched from Spring WS/STOMP to Socket.IO
+	/* --- WebSocket / Socket.IO --- */
 	implementation 'com.corundumstudio.socketio:netty-socketio:1.7.19'
 
 	implementation 'org.flywaydb:flyway-core'
 	implementation 'org.flywaydb:flyway-database-postgresql'
-	runtimeOnly 'org.postgresql:postgresql'
+	runtimeOnly   'org.postgresql:postgresql'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 	testImplementation 'org.springframework.security:spring-security-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testRuntimeOnly   'org.junit.platform:junit-platform-launcher'
 
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
-	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
-	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+	runtimeOnly   'io.jsonwebtoken:jjwt-impl:0.12.3'
+	runtimeOnly   'io.jsonwebtoken:jjwt-jackson:0.12.3'
 
 	implementation('org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9')
 	implementation("org.projectlombok:lombok:1.18.30")
-	compileOnly 'org.projectlombok:lombok:1.18.30'
+	compileOnly    'org.projectlombok:lombok:1.18.30'
 	annotationProcessor 'org.projectlombok:lombok:1.18.30'
 
 	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+	implementation 'com.corundumstudio.socketio:netty-socketio:1.7.19'
 }
 
-tasks.named('test') {
-	outputs.dir snippetsDir
-	useJUnitPlatform()
-}
-
-tasks.named('asciidoctor') {
-	inputs.dir snippetsDir
-	dependsOn test
-}
+tasks.named('test')       { outputs.dir snippetsDir; useJUnitPlatform() }
+tasks.named('asciidoctor'){ inputs.dir  snippetsDir; dependsOn test      }
 
 liquibase {
 	activities.register("main") {
-		url = "jdbc:postgresql://localhost:5432/ai_reminder"
+		url  = "jdbc:postgresql://localhost:5432/ai_reminder"
 		username = "postgres"
 		password = "postgres"
-		driver = "org.postgresql.Driver"
+		driver   = "org.postgresql.Driver"
 		referenceUrl =
 				"hibernate:spring:ru.gigastack.ai_reminder_back?dialect=org.hibernate.dialect.PostgreSQLDialect"
 	}

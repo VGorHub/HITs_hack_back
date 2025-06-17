@@ -10,6 +10,7 @@ import ru.gigastack.ai_reminder_back.models.User;
 import ru.gigastack.ai_reminder_back.notification.dto.ReminderNotification;
 import ru.gigastack.ai_reminder_back.notification.model.OutboxNotification;
 import ru.gigastack.ai_reminder_back.notification.repository.OutboxRepository;
+import ru.gigastack.ai_reminder_back.socketio.SocketIOGateway;   // ← НОВОЕ
 import ru.gigastack.ai_reminder_back.repository.UserRepository;
 import ru.gigastack.ai_reminder_back.telegram.repository.TelegramChatRepository;
 
@@ -25,7 +26,7 @@ public class OutboxNotifier {
     private final UserRepository         userRepo;
     private final TelegramChatRepository chatRepo;
     private final TelegramGateway        telegramGateway;
-    /** ← берём уже настроенный spring-овский mapper (JavaTimeModule + ISO-8601) */
+    private final SocketIOGateway        socketGateway;   // ← НОВОЕ
     private final ObjectMapper           mapper;
 
     @Scheduled(fixedDelay = 5_000)
@@ -40,8 +41,12 @@ public class OutboxNotifier {
         boolean ok = true;
 
         /* -------- WebSocket -------- */
-
-
+        try {
+            socketGateway.push(on.getUserId(), payload);
+        } catch (Exception e) {
+            ok = false;
+            log.error("WS error, reminderId={}", on.getReminderId(), e);
+        }                                              //
         /* -------- Telegram -------- */
         try {
             userRepo.findById(on.getUserId())

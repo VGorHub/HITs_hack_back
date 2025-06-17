@@ -18,4 +18,5 @@ ENV JAVA_TOOL_OPTIONS="\
  -Dspring.profiles.active=prod"
 
 EXPOSE 8443
+EXPOSE 9092
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

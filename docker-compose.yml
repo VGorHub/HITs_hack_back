@@ -29,6 +29,7 @@ services:
         condition: service_healthy
     ports:
       - "8443:8443"
+      - "9092:9092"
     environment:
       # Подтягиваем vars вместо «жёстких» значений
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/ai_reminder
