@@ -1,5 +1,6 @@
 package ru.gigastack.ai_reminder_back.reminder.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -59,5 +60,12 @@ public class ReminderController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@RequestHeader HttpHeaders headers, @PathVariable Long id) {
         service.delete(getUserId(), id);
+    }
+
+    @Operation(summary = "Список будущих напоминаний",
+            security = @SecurityRequirement(name = "BearerAuth"))
+    @GetMapping("/upcoming")
+    public List<ReminderResponse> upcoming() {
+        return service.listUpcoming(getUserId());
     }
 }

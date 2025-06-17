@@ -10,4 +10,5 @@ public interface ReminderService {
     List<ReminderResponse> list(Long userId);
     ReminderResponse update(Long userId, Long id, ReminderRequest req);
     void delete(Long userId, Long id);
+    List<ReminderResponse> listUpcoming(Long userId);
 }

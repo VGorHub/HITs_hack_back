@@ -11,6 +11,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.gigastack.ai_reminder_back.common.NotFoundException;
 
 import java.time.OffsetDateTime;
 import java.util.stream.Collectors;
@@ -57,6 +58,12 @@ public class GlobalExceptionHandler {
 
         return build(HttpStatus.INTERNAL_SERVER_ERROR,
                 "Internal error", req, ex);
+    }
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ApiError> handleNotFound(
+            NotFoundException ex, HttpServletRequest req) {
+
+        return build(HttpStatus.NOT_FOUND, ex.getMessage(), req, ex);
     }
 
     /* ---------- util ---------- */

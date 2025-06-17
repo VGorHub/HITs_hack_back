@@ -105,4 +105,13 @@ public class ReminderServiceImpl implements ReminderService {
                 .orElseThrow(() -> new NotFoundException("Reminder not found"));
         repository.delete(reminder);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ReminderResponse> listUpcoming(Long userId) {
+        return repository.findUpcoming(userId, OffsetDateTime.now(ZoneOffset.UTC))
+                .stream()
+                .map(mapper::toDto)
+                .toList();
+    }
 }
