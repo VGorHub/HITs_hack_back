@@ -3,6 +3,7 @@ package ru.gigastack.ai_reminder_back.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -20,9 +21,10 @@ import java.time.OffsetDateTime;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JsonAuthHandlers implements AuthenticationEntryPoint, AccessDeniedHandler {
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper;
 
     /* -------- 401: не аутентифицирован -------- */
 

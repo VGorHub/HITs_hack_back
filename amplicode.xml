@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="AmplicodeDatabaseMigrationSettings" lastSelectedDirectory="src/main/resources/db/migration" />
+  <component name="AmplicodePersistenceUnitSettings">
+    <persistence-units>
+      <persistence-unit moduleName="ai-reminder-back.main" name="Default">
+        <packages>
+          <package value="ru.gigastack.ai_reminder_back" />
+        </packages>
+      </persistence-unit>
+    </persistence-units>
+  </component>
 </project>

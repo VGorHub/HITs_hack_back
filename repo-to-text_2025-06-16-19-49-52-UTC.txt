@@ -1,0 +1,2253 @@
+Directory: ai-reminder-back
+
+Directory Structure:
+```
+.
+├── .gitignore
+├── .DS_Store
+├── README.md
+├── amplicode.xml
+├── application.yml
+├── build.gradle
+│   └── gradle/wrapper
+│       ├── gradle/wrapper/gradle-wrapper.jar
+│       └── gradle/wrapper/gradle-wrapper.properties
+├── gradlew
+├── gradlew.bat
+├── settings.gradle
+└── src
+    ├── src/.DS_Store
+    ├── src/main
+    │   ├── src/main/.DS_Store
+    │   ├── src/main/java
+    │   │   ├── src/main/java/.DS_Store
+    │   │   └── src/main/java/ru
+    │   │       ├── src/main/java/ru/.DS_Store
+    │   │       └── src/main/java/ru/gigastack
+    │   │           ├── src/main/java/ru/gigastack/.DS_Store
+    │   │           └── src/main/java/ru/gigastack/ai_reminder_back
+    │   │               ├── src/main/java/ru/gigastack/ai_reminder_back/.DS_Store
+    │   │               ├── src/main/java/ru/gigastack/ai_reminder_back/AiReminderBackApplication.java
+    │   │               ├── src/main/java/ru/gigastack/ai_reminder_back/common
+    │   │               │   └── src/main/java/ru/gigastack/ai_reminder_back/common/NotFoundException.java
+    │   │               ├── src/main/java/ru/gigastack/ai_reminder_back/config
+    │   │               │   └── src/main/java/ru/gigastack/ai_reminder_back/config/OpenApiConfig.java
+    │   │               ├── src/main/java/ru/gigastack/ai_reminder_back/controllers
+    │   │               │   └── src/main/java/ru/gigastack/ai_reminder_back/controllers/AuthController.java
+    │   │               ├── src/main/java/ru/gigastack/ai_reminder_back/dto
+    │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/dto/JwtAuthenticationResponse.java
+    │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/dto/SignInRequest.java
+    │   │               │   └── src/main/java/ru/gigastack/ai_reminder_back/dto/SignUpRequest.java
+    │   │               ├── src/main/java/ru/gigastack/ai_reminder_back/exception
+    │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/exception/ApiError.java
+    │   │               │   └── src/main/java/ru/gigastack/ai_reminder_back/exception/GlobalExceptionHandler.java
+    │   │               ├── src/main/java/ru/gigastack/ai_reminder_back/models
+    │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/models/Role.java
+    │   │               │   └── src/main/java/ru/gigastack/ai_reminder_back/models/User.java
+    │   │               ├── src/main/java/ru/gigastack/ai_reminder_back/notification
+    │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/notification/.DS_Store
+    │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/notification/channel
+    │   │               │   │   ├── src/main/java/ru/gigastack/ai_reminder_back/notification/channel/TelegramGatewayNoOp.java
+    │   │               │   │   └── src/main/java/ru/gigastack/ai_reminder_back/notification/channel/WebSocketGatewayNoOp.java
+    │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/notification/dto
+    │   │               │   │   └── src/main/java/ru/gigastack/ai_reminder_back/notification/dto/ReminderNotification.java
+    │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/notification/model
+    │   │               │   │   └── src/main/java/ru/gigastack/ai_reminder_back/notification/model/OutboxNotification.java
+    │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/notification/repository
+    │   │               │   │   └── src/main/java/ru/gigastack/ai_reminder_back/notification/repository/OutboxRepository.java
+    │   │               │   └── src/main/java/ru/gigastack/ai_reminder_back/notification/service
+    │   │               │       ├── src/main/java/ru/gigastack/ai_reminder_back/notification/service/OutboxNotifier.java
+    │   │               │       ├── src/main/java/ru/gigastack/ai_reminder_back/notification/service/TelegramGateway.java
+    │   │               │       └── src/main/java/ru/gigastack/ai_reminder_back/notification/service/WebSocketGateway.java
+    │   │               ├── src/main/java/ru/gigastack/ai_reminder_back/reminder
+    │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/reminder/.DS_Store
+    │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/reminder/controller
+    │   │               │   │   └── src/main/java/ru/gigastack/ai_reminder_back/reminder/controller/ReminderController.java
+    │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/reminder/dto
+    │   │               │   │   ├── src/main/java/ru/gigastack/ai_reminder_back/reminder/dto/ReminderRequest.java
+    │   │               │   │   └── src/main/java/ru/gigastack/ai_reminder_back/reminder/dto/ReminderResponse.java
+    │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/reminder/mapper
+    │   │               │   │   └── src/main/java/ru/gigastack/ai_reminder_back/reminder/mapper/ReminderMapper.java
+    │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/reminder/model
+    │   │               │   │   ├── src/main/java/ru/gigastack/ai_reminder_back/reminder/model/Reminder.java
+    │   │               │   │   ├── src/main/java/ru/gigastack/ai_reminder_back/reminder/model/ReminderSource.java
+    │   │               │   │   └── src/main/java/ru/gigastack/ai_reminder_back/reminder/model/ReminderState.java
+    │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/reminder/repository
+    │   │               │   │   └── src/main/java/ru/gigastack/ai_reminder_back/reminder/repository/ReminderRepository.java
+    │   │               │   └── src/main/java/ru/gigastack/ai_reminder_back/reminder/service
+    │   │               │       ├── src/main/java/ru/gigastack/ai_reminder_back/reminder/service/ReminderService.java
+    │   │               │       └── src/main/java/ru/gigastack/ai_reminder_back/reminder/service/ReminderServiceImpl.java
+    │   │               ├── src/main/java/ru/gigastack/ai_reminder_back/repository
+    │   │               │   └── src/main/java/ru/gigastack/ai_reminder_back/repository/UserRepository.java
+    │   │               ├── src/main/java/ru/gigastack/ai_reminder_back/security
+    │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/security/AuthenticationService.java
+    │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/security/JsonAuthHandlers.java
+    │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/security/JwtAuthenticationFilter.java
+    │   │               │   ├── src/main/java/ru/gigastack/ai_reminder_back/security/JwtService.java
+    │   │               │   └── src/main/java/ru/gigastack/ai_reminder_back/security/SecurityConfiguration.java
+    │   │               └── src/main/java/ru/gigastack/ai_reminder_back/service
+    │   │                   └── src/main/java/ru/gigastack/ai_reminder_back/service/UserService.java
+    │   └── src/main/resources
+    │       ├── src/main/resources/application.properties
+    │       │   └── src/main/resources/db/migration
+    │       │       ├── src/main/resources/db/migration/V1__.sql
+    │       │       └── src/main/resources/db/migration/V2__add_tz.sql
+                    └── src/test/java/ru/gigastack/ai_reminder_back
+                        └── src/test/java/ru/gigastack/ai_reminder_back/AiReminderBackApplicationTests.java
+```
+
+Contents of .DS_Store:
+```
+[Could not decode file contents]
+
+```
+
+Contents of README.md:
+```
+# HITs_hack_back
+
+```
+
+Contents of gradlew:
+```
+#!/bin/sh
+
+#
+# Copyright © 2015-2021 the original authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+##############################################################################
+#
+#   Gradle start up script for POSIX generated by Gradle.
+#
+#   Important for running:
+#
+#   (1) You need a POSIX-compliant shell to run this script. If your /bin/sh is
+#       noncompliant, but you have some other compliant shell such as ksh or
+#       bash, then to run this script, type that shell name before the whole
+#       command line, like:
+#
+#           ksh Gradle
+#
+#       Busybox and similar reduced shells will NOT work, because this script
+#       requires all of these POSIX shell features:
+#         * functions;
+#         * expansions «$var», «${var}», «${var:-default}», «${var+SET}»,
+#           «${var#prefix}», «${var%suffix}», and «$( cmd )»;
+#         * compound commands having a testable exit status, especially «case»;
+#         * various built-in commands including «command», «set», and «ulimit».
+#
+#   Important for patching:
+#
+#   (2) This script targets any POSIX shell, so it avoids extensions provided
+#       by Bash, Ksh, etc; in particular arrays are avoided.
+#
+#       The "traditional" practice of packing multiple parameters into a
+#       space-separated string is a well documented source of bugs and security
+#       problems, so this is (mostly) avoided, by progressively accumulating
+#       options in "$@", and eventually passing that to Java.
+#
+#       Where the inherited environment variables (DEFAULT_JVM_OPTS, JAVA_OPTS,
+#       and GRADLE_OPTS) rely on word-splitting, this is performed explicitly;
+#       see the in-line comments for details.
+#
+#       There are tweaks for specific operating systems such as AIX, CygWin,
+#       Darwin, MinGW, and NonStop.
+#
+#   (3) This script is generated from the Groovy template
+#       https://github.com/gradle/gradle/blob/HEAD/platforms/jvm/plugins-application/src/main/resources/org/gradle/api/internal/plugins/unixStartScript.txt
+#       within the Gradle project.
+#
+#       You can find Gradle at https://github.com/gradle/gradle/.
+#
+##############################################################################
+
+# Attempt to set APP_HOME
+
+# Resolve links: $0 may be a link
+app_path=$0
+
+# Need this for daisy-chained symlinks.
+while
+    APP_HOME=${app_path%"${app_path##*/}"}  # leaves a trailing /; empty if no leading path
+    [ -h "$app_path" ]
+do
+    ls=$( ls -ld "$app_path" )
+    link=${ls#*' -> '}
+    case $link in             #(
+      /*)   app_path=$link ;; #(
+      *)    app_path=$APP_HOME$link ;;
+    esac
+done
+
+# This is normally unused
+# shellcheck disable=SC2034
+APP_BASE_NAME=${0##*/}
+# Discard cd standard output in case $CDPATH is set (https://github.com/gradle/gradle/issues/25036)
+APP_HOME=$( cd -P "${APP_HOME:-./}" > /dev/null && printf '%s\n' "$PWD" ) || exit
+
+# Use the maximum available, or set MAX_FD != -1 to use that value.
+MAX_FD=maximum
+
+warn () {
+    echo "$*"
+} >&2
+
+die () {
+    echo
+    echo "$*"
+    echo
+    exit 1
+} >&2
+
+# OS specific support (must be 'true' or 'false').
+cygwin=false
+msys=false
+darwin=false
+nonstop=false
+case "$( uname )" in                #(
+  CYGWIN* )         cygwin=true  ;; #(
+  Darwin* )         darwin=true  ;; #(
+  MSYS* | MINGW* )  msys=true    ;; #(
+  NONSTOP* )        nonstop=true ;;
+esac
+
+CLASSPATH="\\\"\\\""
+
+
+# Determine the Java command to use to start the JVM.
+if [ -n "$JAVA_HOME" ] ; then
+    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
+        # IBM's JDK on AIX uses strange locations for the executables
+        JAVACMD=$JAVA_HOME/jre/sh/java
+    else
+        JAVACMD=$JAVA_HOME/bin/java
+    fi
+    if [ ! -x "$JAVACMD" ] ; then
+        die "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."
+    fi
+else
+    JAVACMD=java
+    if ! command -v java >/dev/null 2>&1
+    then
+        die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."
+    fi
+fi
+
+# Increase the maximum file descriptors if we can.
+if ! "$cygwin" && ! "$darwin" && ! "$nonstop" ; then
+    case $MAX_FD in #(
+      max*)
+        # In POSIX sh, ulimit -H is undefined. That's why the result is checked to see if it worked.
+        # shellcheck disable=SC2039,SC3045
+        MAX_FD=$( ulimit -H -n ) ||
+            warn "Could not query maximum file descriptor limit"
+    esac
+    case $MAX_FD in  #(
+      '' | soft) :;; #(
+      *)
+        # In POSIX sh, ulimit -n is undefined. That's why the result is checked to see if it worked.
+        # shellcheck disable=SC2039,SC3045
+        ulimit -n "$MAX_FD" ||
+            warn "Could not set maximum file descriptor limit to $MAX_FD"
+    esac
+fi
+
+# Collect all arguments for the java command, stacking in reverse order:
+#   * args from the command line
+#   * the main class name
+#   * -classpath
+#   * -D...appname settings
+#   * --module-path (only if needed)
+#   * DEFAULT_JVM_OPTS, JAVA_OPTS, and GRADLE_OPTS environment variables.
+
+# For Cygwin or MSYS, switch paths to Windows format before running java
+if "$cygwin" || "$msys" ; then
+    APP_HOME=$( cygpath --path --mixed "$APP_HOME" )
+    CLASSPATH=$( cygpath --path --mixed "$CLASSPATH" )
+
+    JAVACMD=$( cygpath --unix "$JAVACMD" )
+
+    # Now convert the arguments - kludge to limit ourselves to /bin/sh
+    for arg do
+        if
+            case $arg in                                #(
+              -*)   false ;;                            # don't mess with options #(
+              /?*)  t=${arg#/} t=/${t%%/*}              # looks like a POSIX filepath
+                    [ -e "$t" ] ;;                      #(
+              *)    false ;;
+            esac
+        then
+            arg=$( cygpath --path --ignore --mixed "$arg" )
+        fi
+        # Roll the args list around exactly as many times as the number of
+        # args, so each arg winds up back in the position where it started, but
+        # possibly modified.
+        #
+        # NB: a `for` loop captures its iteration list before it begins, so
+        # changing the positional parameters here affects neither the number of
+        # iterations, nor the values presented in `arg`.
+        shift                   # remove old arg
+        set -- "$@" "$arg"      # push replacement arg
+    done
+fi
+
+
+# Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+
+# Collect all arguments for the java command:
+#   * DEFAULT_JVM_OPTS, JAVA_OPTS, and optsEnvironmentVar are not allowed to contain shell fragments,
+#     and any embedded shellness will be escaped.
+#   * For example: A user cannot expect ${Hostname} to be expanded, as it is an environment variable and will be
+#     treated as '${Hostname}' itself on the command line.
+
+set -- \
+        "-Dorg.gradle.appname=$APP_BASE_NAME" \
+        -classpath "$CLASSPATH" \
+        -jar "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" \
+        "$@"
+
+# Stop when "xargs" is not available.
+if ! command -v xargs >/dev/null 2>&1
+then
+    die "xargs is not available"
+fi
+
+# Use "xargs" to parse quoted args.
+#
+# With -n1 it outputs one arg per line, with the quotes and backslashes removed.
+#
+# In Bash we could simply go:
+#
+#   readarray ARGS < <( xargs -n1 <<<"$var" ) &&
+#   set -- "${ARGS[@]}" "$@"
+#
+# but POSIX shell has neither arrays nor command substitution, so instead we
+# post-process each arg (as a line of input to sed) to backslash-escape any
+# character that might be a shell metacharacter, then use eval to reverse
+# that process (while maintaining the separation between arguments), and wrap
+# the whole thing up as a single "set" statement.
+#
+# This will of course break if any of these variables contains a newline or
+# an unmatched quote.
+#
+
+eval "set -- $(
+        printf '%s\n' "$DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS" |
+        xargs -n1 |
+        sed ' s~[^-[:alnum:]+,./:=@_]~\\&~g; ' |
+        tr '\n' ' '
+    )" '"$@"'
+
+exec "$JAVACMD" "$@"
+
+```
+
+Contents of build.gradle:
+```
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.0'
+	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.asciidoctor.jvm.convert' version '3.3.2'
+	id 'org.liquibase.gradle' version '2.2.1'
+}
+
+group = 'ru.gigastack'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	set('snippetsDir', file("build/generated-snippets"))
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-quartz'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.flywaydb:flyway-database-postgresql'
+	runtimeOnly 'org.postgresql:postgresql'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'io.projectreactor:reactor-test'
+	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
+	implementation('org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9')
+	implementation("org.projectlombok:lombok:1.18.30")
+	compileOnly 'org.projectlombok:lombok:1.18.30'
+	annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+}
+
+tasks.named('test') {
+	outputs.dir snippetsDir
+	useJUnitPlatform()
+}
+
+tasks.named('asciidoctor') {
+	inputs.dir snippetsDir
+	dependsOn test
+}
+liquibase {
+	activities.register("main") {
+		url = "jdbc:postgresql://localhost:5432/ai_reminder"
+		username = "postgres"
+		password = "postgres"
+		driver = "org.postgresql.Driver"
+		referenceUrl =
+				"hibernate:spring:ru.gigastack.ai_reminder_back?dialect=org.hibernate.dialect.PostgreSQLDialect"
+	}
+}
+```
+
+Contents of application.yml:
+```
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ai_reminder
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+token:
+  signing:
+    key: 53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327855
+
+```
+
+Contents of gradlew.bat:
+```
+@rem
+@rem Copyright 2015 the original author or authors.
+@rem
+@rem Licensed under the Apache License, Version 2.0 (the "License");
+@rem you may not use this file except in compliance with the License.
+@rem You may obtain a copy of the License at
+@rem
+@rem      https://www.apache.org/licenses/LICENSE-2.0
+@rem
+@rem Unless required by applicable law or agreed to in writing, software
+@rem distributed under the License is distributed on an "AS IS" BASIS,
+@rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+@rem See the License for the specific language governing permissions and
+@rem limitations under the License.
+@rem
+@rem SPDX-License-Identifier: Apache-2.0
+@rem
+
+@if "%DEBUG%"=="" @echo off
+@rem ##########################################################################
+@rem
+@rem  Gradle startup script for Windows
+@rem
+@rem ##########################################################################
+
+@rem Set local scope for the variables with windows NT shell
+if "%OS%"=="Windows_NT" setlocal
+
+set DIRNAME=%~dp0
+if "%DIRNAME%"=="" set DIRNAME=.
+@rem This is normally unused
+set APP_BASE_NAME=%~n0
+set APP_HOME=%DIRNAME%
+
+@rem Resolve any "." and ".." in APP_HOME to make it shorter.
+for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
+
+@rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
+
+@rem Find java.exe
+if defined JAVA_HOME goto findJavaFromJavaHome
+
+set JAVA_EXE=java.exe
+%JAVA_EXE% -version >NUL 2>&1
+if %ERRORLEVEL% equ 0 goto execute
+
+echo. 1>&2
+echo ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH. 1>&2
+echo. 1>&2
+echo Please set the JAVA_HOME variable in your environment to match the 1>&2
+echo location of your Java installation. 1>&2
+
+goto fail
+
+:findJavaFromJavaHome
+set JAVA_HOME=%JAVA_HOME:"=%
+set JAVA_EXE=%JAVA_HOME%/bin/java.exe
+
+if exist "%JAVA_EXE%" goto execute
+
+echo. 1>&2
+echo ERROR: JAVA_HOME is set to an invalid directory: %JAVA_HOME% 1>&2
+echo. 1>&2
+echo Please set the JAVA_HOME variable in your environment to match the 1>&2
+echo location of your Java installation. 1>&2
+
+goto fail
+
+:execute
+@rem Setup the command line
+
+set CLASSPATH=
+
+
+@rem Execute Gradle
+"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" -jar "%APP_HOME%\gradle\wrapper\gradle-wrapper.jar" %*
+
+:end
+@rem End local scope for the variables with windows NT shell
+if %ERRORLEVEL% equ 0 goto mainEnd
+
+:fail
+rem Set variable GRADLE_EXIT_CONSOLE if you need the _script_ return code instead of
+rem the _cmd.exe /c_ return code!
+set EXIT_CODE=%ERRORLEVEL%
+if %EXIT_CODE% equ 0 set EXIT_CODE=1
+if not ""=="%GRADLE_EXIT_CONSOLE%" exit %EXIT_CODE%
+exit /b %EXIT_CODE%
+
+:mainEnd
+if "%OS%"=="Windows_NT" endlocal
+
+:omega
+
+```
+
+Contents of settings.gradle:
+```
+rootProject.name = 'ai-reminder-back'
+
+```
+
+Contents of amplicode.xml:
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AmplicodeDatabaseMigrationSettings" lastSelectedDirectory="src/main/resources/db/migration" />
+  <component name="AmplicodePersistenceUnitSettings">
+    <persistence-units>
+      <persistence-unit moduleName="ai-reminder-back.main" name="Default">
+        <packages>
+          <package value="ru.gigastack.ai_reminder_back" />
+        </packages>
+      </persistence-unit>
+    </persistence-units>
+  </component>
+</project>
+```
+
+Contents of gradle/wrapper/gradle-wrapper.jar:
+```
+[Could not decode file contents]
+
+```
+
+Contents of gradle/wrapper/gradle-wrapper.properties:
+```
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.14.2-bin.zip
+networkTimeout=10000
+validateDistributionUrl=true
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+
+```
+
+Contents of src/.DS_Store:
+```
+[Could not decode file contents]
+
+```
+
+Contents of src/test/java/ru/gigastack/ai_reminder_back/AiReminderBackApplicationTests.java:
+```
+package ru.gigastack.ai_reminder_back;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+/*@SpringBootTest
+class AiReminderBackApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}*/
+
+```
+
+Contents of src/main/.DS_Store:
+```
+[Could not decode file contents]
+
+```
+
+Contents of src/main/resources/application.properties:
+```
+spring.application.name=ai-reminder-back
+#Flyway configuration
+spring.flyway.baseline-on-migrate=true
+spring.flyway.baseline-version=0
+
+```
+
+Contents of src/main/resources/db/migration/V1__.sql:
+```
+CREATE TABLE outbox_notifications (
+  id BIGINT GENERATED BY DEFAULT AS IDENTITY NOT NULL,
+   reminder_id BIGINT,
+   user_id BIGINT,
+   payload VARCHAR(255),
+   processed BOOLEAN NOT NULL,
+   created_at TIMESTAMP WITHOUT TIME ZONE,
+   CONSTRAINT pk_outbox_notifications PRIMARY KEY (id)
+);
+
+CREATE TABLE reminders (
+  id BIGINT GENERATED BY DEFAULT AS IDENTITY NOT NULL,
+   user_id BIGINT,
+   title VARCHAR(255),
+   description VARCHAR(2000),
+   scheduled_at TIMESTAMP WITHOUT TIME ZONE,
+   location VARCHAR(255),
+   state VARCHAR(255),
+   source VARCHAR(255),
+   external_calendar_event_id VARCHAR(255),
+   created_at TIMESTAMP WITHOUT TIME ZONE,
+   CONSTRAINT pk_reminders PRIMARY KEY (id)
+);
+```
+
+Contents of src/main/resources/db/migration/V2__add_tz.sql:
+```
+-- Reminders --------------------------------------------------------------
+ALTER TABLE reminders
+  ALTER COLUMN scheduled_at TYPE TIMESTAMPTZ
+    USING scheduled_at AT TIME ZONE 'Asia/Tomsk',   -- <-- поправьте, где «как было»
+  ALTER COLUMN created_at   TYPE TIMESTAMPTZ
+    USING created_at   AT TIME ZONE 'Asia/Tomsk';
+
+-- Outbox -----------------------------------------------------------------
+ALTER TABLE outbox_notifications
+  ALTER COLUMN created_at TYPE TIMESTAMPTZ
+    USING created_at AT TIME ZONE 'Asia/Tomsk';
+```
+
+Contents of src/main/java/.DS_Store:
+```
+[Could not decode file contents]
+
+```
+
+Contents of src/main/java/ru/.DS_Store:
+```
+[Could not decode file contents]
+
+```
+
+Contents of src/main/java/ru/gigastack/.DS_Store:
+```
+[Could not decode file contents]
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/.DS_Store:
+```
+[Could not decode file contents]
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/AiReminderBackApplication.java:
+```
+package ru.gigastack.ai_reminder_back;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
+@SpringBootApplication
+@EnableScheduling
+public class AiReminderBackApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(AiReminderBackApplication.class, args);
+	}
+
+}
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/dto/SignInRequest.java:
+```
+package ru.gigastack.ai_reminder_back.dto;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+
+@Data
+@Schema(description = "Запрос на аутентификацию")
+public class SignInRequest {
+
+    @Schema(description = "Имя пользователя", example = "Jon")
+    @Size(min = 5, max = 50, message = "Имя пользователя должно содержать от 5 до 50 символов")
+    @NotBlank(message = "Имя пользователя не может быть пустыми")
+    private String username;
+
+    @Schema(description = "Пароль", example = "my_1secret1_password")
+    @Size(min = 8, max = 255, message = "Длина пароля должна быть от 8 до 255 символов")
+    @NotBlank(message = "Пароль не может быть пустыми")
+    private String password;
+}
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/dto/SignUpRequest.java:
+```
+package ru.gigastack.ai_reminder_back.dto;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+
+@Data
+@Schema(description = "Запрос на регистрацию")
+public class SignUpRequest {
+
+    @Schema(description = "Имя пользователя", example = "Jon")
+    @Size(min = 5, max = 50, message = "Имя пользователя должно содержать от 5 до 50 символов")
+    @NotBlank(message = "Имя пользователя не может быть пустыми")
+    private String username;
+
+    /*@Schema(description = "Адрес электронной почты", example = "jondoe@gmail.com")
+    @Size(min = 5, max = 255, message = "Адрес электронной почты должен содержать от 5 до 255 символов")
+    @NotBlank(message = "Адрес электронной почты не может быть пустыми")
+    @Email(message = "Email адрес должен быть в формате user@example.com")
+    private String email;*/
+
+    @Schema(description = "Пароль", example = "my_1secret1_password")
+    @Size(max = 255, message = "Длина пароля должна быть не более 255 символов")
+    private String password;
+}
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/dto/JwtAuthenticationResponse.java:
+```
+package ru.gigastack.ai_reminder_back.dto;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Schema(description = "Ответ c токеном доступа")
+public class JwtAuthenticationResponse {
+    @Schema(description = "Токен доступа", example = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTYyMjUwNj...")
+    private String token;
+}
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/repository/UserRepository.java:
+```
+package ru.gigastack.ai_reminder_back.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import ru.gigastack.ai_reminder_back.models.User;
+
+import java.util.Optional;
+
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByUsername(String username);
+    boolean existsByUsername(String username);
+//    boolean existsByEmail(String email);
+}
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/config/OpenApiConfig.java:
+```
+package ru.gigastack.ai_reminder_back.config;
+
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+
+/**
+ * Настройка OpenAPI / Swagger-UI.
+ * Определяем схему безопасности «BearerAuth» (JWT в заголовке Authorization).
+ */
+@OpenAPIDefinition(
+        info = @Info(
+                title       = "AI-Reminder API",
+                version     = "v1",
+                description = "Backend-сервис напоминаний"
+        )
+)
+@SecurityScheme(
+        name         = "BearerAuth",       // << это имя используем в @SecurityRequirement
+        type         = SecuritySchemeType.HTTP,
+        scheme       = "bearer",
+        bearerFormat = "JWT",
+        in           = SecuritySchemeIn.HEADER
+)
+public class OpenApiConfig {
+    /* пустой класс-конфигурация, нужны только аннотации */
+}
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/security/JwtService.java:
+```
+package ru.gigastack.ai_reminder_back.security;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+import ru.gigastack.ai_reminder_back.models.User;
+
+import java.security.Key;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
+@Service
+public class JwtService {
+    @Value("${token.signing.key}")
+    private String jwtSigningKey;
+
+    /**
+     * Извлечение имени пользователя из токена
+     *
+     * @param token токен
+     * @return имя пользователя
+     */
+    public String extractUserName(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    /**
+     * Генерация токена
+     *
+     * @param userDetails данные пользователя
+     * @return токен
+     */
+    public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        if (userDetails instanceof User customUserDetails) {
+            claims.put("id", customUserDetails.getId());
+//            claims.put("email", customUserDetails.getEmail());
+            claims.put("role", customUserDetails.getRole());
+        }
+        return generateToken(claims, userDetails);
+    }
+
+    /**
+     * Проверка токена на валидность
+     *
+     * @param token       токен
+     * @param userDetails данные пользователя
+     * @return true, если токен валиден
+     */
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        final String userName = extractUserName(token);
+        return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    }
+
+    /**
+     * Извлечение данных из токена
+     *
+     * @param token           токен
+     * @param claimsResolvers функция извлечения данных
+     * @param <T>             тип данных
+     * @return данные
+     */
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolvers.apply(claims);
+    }
+
+    /**
+     * Генерация токена
+     *
+     * @param extraClaims дополнительные данные
+     * @param userDetails данные пользователя
+     * @return токен
+     */
+    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 100000 * 60 * 24))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
+    }
+
+    /**
+     * Проверка токена на просроченность
+     *
+     * @param token токен
+     * @return true, если токен просрочен
+     */
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
+    /**
+     * Извлечение даты истечения токена
+     *
+     * @param token токен
+     * @return дата истечения
+     */
+    private Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+
+    /**
+     * Извлечение всех данных из токена
+     *
+     * @param token токен
+     * @return данные
+     */
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser().setSigningKey(getSigningKey()).build().parseClaimsJws(token)
+                .getBody();
+    }
+
+    /**
+     * Получение ключа для подписи токена
+     *
+     * @return ключ
+     */
+    private Key getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(jwtSigningKey);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+}
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/security/JsonAuthHandlers.java:
+```
+package ru.gigastack.ai_reminder_back.security;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.stereotype.Component;
+import ru.gigastack.ai_reminder_back.exception.ApiError;
+
+import java.io.IOException;
+import java.time.OffsetDateTime;
+
+/**
+ * Делает Spring Security-ошибки (401 / 403) однотипными с MVC-ошибками.
+ */
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class JsonAuthHandlers implements AuthenticationEntryPoint, AccessDeniedHandler {
+
+    private final ObjectMapper mapper;
+
+    /* -------- 401: не аутентифицирован -------- */
+
+    @Override
+    public void commence(HttpServletRequest request,
+                         HttpServletResponse response,
+                         AuthenticationException authException) throws IOException {
+
+        send(HttpStatus.UNAUTHORIZED, "Unauthorized", request, response);
+    }
+
+    /* -------- 403: нет прав -------- */
+
+    @Override
+    public void handle(HttpServletRequest request,
+                       HttpServletResponse response,
+                       AccessDeniedException accessDeniedException) throws IOException {
+
+        send(HttpStatus.FORBIDDEN, "Forbidden", request, response);
+    }
+
+    /* -------- util -------- */
+
+    private void send(HttpStatus status,
+                      String message,
+                      HttpServletRequest req,
+                      HttpServletResponse resp) throws IOException {
+
+        ApiError body = ApiError.builder()
+                .timestamp(OffsetDateTime.now())
+                .status(status.value())
+                .error(status.getReasonPhrase())
+                .message(message)
+                .path(req.getRequestURI())
+                .build();
+
+        resp.setStatus(status.value());
+        resp.setContentType("application/json");
+        mapper.writeValue(resp.getWriter(), body);
+
+        log.warn("{} {} → {} {}", req.getMethod(), req.getRequestURI(),
+                status.value(), message);
+    }
+}
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/security/AuthenticationService.java:
+```
+package ru.gigastack.ai_reminder_back.security;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import ru.gigastack.ai_reminder_back.dto.JwtAuthenticationResponse;
+import ru.gigastack.ai_reminder_back.dto.SignInRequest;
+import ru.gigastack.ai_reminder_back.dto.SignUpRequest;
+import ru.gigastack.ai_reminder_back.models.Role;
+import ru.gigastack.ai_reminder_back.models.User;
+import ru.gigastack.ai_reminder_back.service.UserService;
+
+@Service
+@RequiredArgsConstructor
+public class AuthenticationService {
+    private final UserService userService;
+    private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+
+    /**
+     * Регистрация пользователя
+     *
+     * @param request данные пользователя
+     * @return токен
+     */
+    public JwtAuthenticationResponse signUp(SignUpRequest request) {
+
+        var user = User.builder()
+                .username(request.getUsername())
+//                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.ROLE_USER)
+                .build();
+
+        userService.create(user);
+
+        var jwt = jwtService.generateToken(user);
+        return new JwtAuthenticationResponse(jwt);
+    }
+
+    /**
+     * Аутентификация пользователя
+     *
+     * @param request данные пользователя
+     * @return токен
+     */
+    public JwtAuthenticationResponse signIn(SignInRequest request) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                request.getUsername(),
+                request.getPassword()
+        ));
+
+        var user = userService
+                .userDetailsService()
+                .loadUserByUsername(request.getUsername());
+
+        var jwt = jwtService.generateToken(user);
+        return new JwtAuthenticationResponse(jwt);
+    }
+}
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/security/JwtAuthenticationFilter.java:
+```
+package ru.gigastack.ai_reminder_back.security;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+import ru.gigastack.ai_reminder_back.service.UserService;
+
+import java.io.IOException;
+
+@Component
+@RequiredArgsConstructor
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    public static final String BEARER_PREFIX = "Bearer ";
+    public static final String HEADER_NAME = "Authorization";
+    private final JwtService jwtService;
+    private final UserService userService;
+
+    @Override
+    protected void doFilterInternal(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain
+    ) throws ServletException, IOException {
+
+        // Получаем токен из заголовка
+        var authHeader = request.getHeader(HEADER_NAME);
+        if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, BEARER_PREFIX)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // Обрезаем префикс и получаем имя пользователя из токена
+        var jwt = authHeader.substring(BEARER_PREFIX.length());
+        var username = jwtService.extractUserName(jwt);
+
+        if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = userService
+                    .userDetailsService()
+                    .loadUserByUsername(username);
+
+            // Если токен валиден, то аутентифицируем пользователя
+            if (jwtService.isTokenValid(jwt, userDetails)) {
+                SecurityContext context = SecurityContextHolder.createEmptyContext();
+
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                );
+
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                context.setAuthentication(authToken);
+                SecurityContextHolder.setContext(context);
+            }
+        }
+        filterChain.doFilter(request, response);
+    }
+}
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/security/SecurityConfiguration.java:
+```
+package ru.gigastack.ai_reminder_back.security;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import ru.gigastack.ai_reminder_back.service.UserService;
+
+import java.util.List;
+
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
+@Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
+@RequiredArgsConstructor
+public class SecurityConfiguration {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final UserService              userService;
+    private final JsonAuthHandlers         jsonHandlers;
+
+    /* ---------- основная цепочка ---------- */
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        http.csrf(AbstractHttpConfigurer::disable)
+
+                .cors(cors -> cors.configurationSource(request -> {
+                    CorsConfiguration cfg = new CorsConfiguration();
+                    cfg.setAllowedOriginPatterns(List.of("*"));
+                    cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    cfg.setAllowedHeaders(List.of("*"));
+                    cfg.setAllowCredentials(true);
+                    return cfg;
+                }))
+
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**").permitAll()
+                        .anyRequest().authenticated())
+
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jsonHandlers)
+                        .accessDeniedHandler(jsonHandlers))
+
+                .sessionManagement(sm -> sm.sessionCreationPolicy(STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userService.userDetailsService());
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg)
+            throws Exception {
+        return cfg.getAuthenticationManager();
+    }
+}
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/notification/.DS_Store:
+```
+[Could not decode file contents]
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/notification/dto/ReminderNotification.java:
+```
+package ru.gigastack.ai_reminder_back.notification.dto;
+
+import lombok.*;
+
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+
+/**
+ * То, что реально уходит во фронт / Telegram.
+ * Здесь только те данные, которые нужны каналу доставки.
+ */
+@Value
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor            // ← Lombok даст дефолтный ctor
+@AllArgsConstructor
+public class ReminderNotification {
+    private Long   reminderId;
+    private Long   userId;
+    private String title;
+    private String description;
+    private LocalDateTime scheduledAt;
+}
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/notification/repository/OutboxRepository.java:
+```
+package ru.gigastack.ai_reminder_back.notification.repository;
+
+import org.springframework.data.jpa.repository.*;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import ru.gigastack.ai_reminder_back.notification.model.OutboxNotification;
+
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.*;
+
+@Repository
+public interface OutboxRepository extends JpaRepository<OutboxNotification, Long> {
+
+    /** Только те, что пора отправить – reminder уже «настал» */
+    @Query("""
+       select on
+         from OutboxNotification on
+         join Reminder r on r.id = on.reminderId
+        where on.processed = false
+          and r.scheduledAt <= :now
+       """)
+    List<OutboxNotification> findReady(@Param("now") LocalDateTime now);
+}
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/notification/channel/WebSocketGatewayNoOp.java:
+```
+package ru.gigastack.ai_reminder_back.notification.channel;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
+import ru.gigastack.ai_reminder_back.notification.dto.ReminderNotification;
+import ru.gigastack.ai_reminder_back.notification.service.WebSocketGateway;
+
+@Slf4j
+@Component
+@Primary                   // если позже появится реальный бин — уберёшь эту аннотацию
+public class WebSocketGatewayNoOp implements WebSocketGateway {
+
+    @Override
+    public void pushToUser(Long userId, ReminderNotification payload) {
+        log.info("[NO-OP WS] → user={} {}", userId, payload);
+    }
+}
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/notification/channel/TelegramGatewayNoOp.java:
+```
+package ru.gigastack.ai_reminder_back.notification.channel;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
+import ru.gigastack.ai_reminder_back.notification.dto.ReminderNotification;
+import ru.gigastack.ai_reminder_back.notification.service.TelegramGateway;
+
+@Slf4j
+@Component
+@Primary
+public class TelegramGatewayNoOp implements TelegramGateway {
+
+    @Override
+    public void push(Long userId, ReminderNotification payload) {
+        log.info("[NO-OP TG] → user={} {}", userId, payload);
+    }
+}
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/notification/model/OutboxNotification.java:
+```
+package ru.gigastack.ai_reminder_back.notification.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.*;
+
+@Entity
+@Table(name = "outbox_notifications")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class OutboxNotification {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private Long reminderId;
+
+    private Long userId;
+
+    private String payload; // JSON payload for delivery
+
+    private boolean processed;
+
+    private ZonedDateTime createdAt;
+}
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/notification/service/WebSocketGateway.java:
+```
+package ru.gigastack.ai_reminder_back.notification.service;
+
+import ru.gigastack.ai_reminder_back.notification.dto.ReminderNotification;
+
+public interface WebSocketGateway {
+    /** Отправить конкретному пользователю. */
+    void pushToUser(Long userId, ReminderNotification payload);
+}
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/notification/service/OutboxNotifier.java:
+```
+package ru.gigastack.ai_reminder_back.notification.service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.gigastack.ai_reminder_back.notification.dto.ReminderNotification;
+import ru.gigastack.ai_reminder_back.notification.model.OutboxNotification;
+import ru.gigastack.ai_reminder_back.notification.repository.OutboxRepository;
+
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class OutboxNotifier {
+
+    private final OutboxRepository repo;
+    private final WebSocketGateway webSocketGateway;
+    private final TelegramGateway  telegramGateway;
+    private final ObjectMapper     mapper = new ObjectMapper();
+
+    /** Каждые 5 сек проверяем «созрели» ли записи. */
+    @Scheduled(fixedDelay = 5_000)
+    @Transactional
+    public void dispatch() {
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        repo.findReady(now).forEach(this::sendAndMark);
+    }
+
+    private void sendAndMark(OutboxNotification on) {
+        ReminderNotification payload = toReminderNotification(on);
+
+        boolean ok = true;
+        try {
+            webSocketGateway.pushToUser(on.getUserId(), payload);
+            telegramGateway.push(on.getUserId(), payload);
+        } catch (Exception e) {
+            ok = false;
+            log.error("Ошибка при отправке reminderId={}", on.getReminderId(), e);
+        }
+
+        if (ok) {
+            on.setProcessed(true);
+            repo.save(on);
+        }
+    }
+
+    private ReminderNotification toReminderNotification(OutboxNotification on) {
+        try {
+            return mapper.readValue(on.getPayload(), ReminderNotification.class);
+        } catch (Exception e) {
+            log.warn("Bad payload, fallback dto. id={}", on.getId(), e);
+            return ReminderNotification.builder()
+                    .reminderId(on.getReminderId())
+                    .userId(on.getUserId())
+                    .title("(unknown)")
+                    .build();
+        }
+    }
+}
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/notification/service/TelegramGateway.java:
+```
+package ru.gigastack.ai_reminder_back.notification.service;
+
+import ru.gigastack.ai_reminder_back.notification.dto.ReminderNotification;
+
+public interface TelegramGateway {
+    void push(Long userId, ReminderNotification payload);
+}
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/reminder/.DS_Store:
+```
+[Could not decode file contents]
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/reminder/dto/ReminderRequest.java:
+```
+package ru.gigastack.ai_reminder_back.reminder.dto;
+
+import jakarta.validation.constraints.*;
+import java.time.*;
+
+public record ReminderRequest(
+        @NotBlank String title,
+        String description,
+        @NotNull OffsetDateTime scheduledAt,
+        String location
+) {}
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/reminder/dto/ReminderResponse.java:
+```
+package ru.gigastack.ai_reminder_back.reminder.dto;
+
+import ru.gigastack.ai_reminder_back.reminder.model.*;
+import java.time.*;
+
+public record ReminderResponse(
+        Long id,
+        String title,
+        String description,
+        OffsetDateTime scheduledAt,
+        String location,
+        ReminderState state,
+        ReminderSource source
+) {}
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/reminder/repository/ReminderRepository.java:
+```
+package ru.gigastack.ai_reminder_back.reminder.repository;
+
+import org.springframework.data.jpa.repository.*;
+import org.springframework.stereotype.Repository;
+import ru.gigastack.ai_reminder_back.reminder.model.*;
+
+import java.time.*;
+import java.util.*;
+
+@Repository
+public interface ReminderRepository extends JpaRepository<Reminder, Long> {
+
+    List<Reminder> findByUserId(Long userId);
+
+    List<Reminder> findByStateAndScheduledAtBefore(ReminderState state, LocalDateTime before);
+}
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/reminder/mapper/ReminderMapper.java:
+```
+package ru.gigastack.ai_reminder_back.reminder.mapper;
+
+import org.mapstruct.*;
+import ru.gigastack.ai_reminder_back.reminder.model.*;
+import ru.gigastack.ai_reminder_back.reminder.dto.*;
+
+@Mapper(componentModel = "spring")
+public interface ReminderMapper {
+
+    Reminder toEntity(ReminderRequest dto);
+
+    ReminderResponse toDto(Reminder entity);
+}
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/reminder/controller/ReminderController.java:
+```
+package ru.gigastack.ai_reminder_back.reminder.controller;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.*;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+import ru.gigastack.ai_reminder_back.models.User;
+import ru.gigastack.ai_reminder_back.reminder.dto.*;
+import ru.gigastack.ai_reminder_back.reminder.service.ReminderService;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/v1/reminders")
+@RequiredArgsConstructor
+public class ReminderController {
+
+    private final ReminderService service;
+
+    // For hackathon simplicity we take userId from header; replace with auth later
+    /*private Long getUserIdFromHeader(HttpHeaders headers) {
+        return Long.valueOf(headers.getFirst("X-User-Id"));
+    }*/
+    private Long getUserId() {
+        return ((User) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal()).getId();
+    }
+
+    @PostMapping
+    public ResponseEntity<ReminderResponse> create(@RequestHeader HttpHeaders headers,
+                                                   @RequestBody @Valid ReminderRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(service.create(getUserId(), request));
+    }
+
+    @GetMapping("/{id}")
+    public ReminderResponse get(@RequestHeader HttpHeaders headers, @PathVariable Long id) {
+        return service.get(getUserId(), id);
+    }
+
+    @GetMapping
+    public List<ReminderResponse> list(@RequestHeader HttpHeaders headers) {
+        return service.list(getUserId());
+    }
+
+    @PutMapping("/{id}")
+    public ReminderResponse update(@RequestHeader HttpHeaders headers,
+                                   @PathVariable Long id,
+                                   @RequestBody @Valid ReminderRequest request) {
+        return service.update(getUserId(), id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@RequestHeader HttpHeaders headers, @PathVariable Long id) {
+        service.delete(getUserId(), id);
+    }
+}
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/reminder/model/Reminder.java:
+```
+package ru.gigastack.ai_reminder_back.reminder.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.*;
+
+@Entity
+@Table(name = "reminders")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Reminder {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private Long userId;
+
+    private String title;
+
+    @Column(length = 2000)
+    private String description;
+
+    @Column(name = "scheduled_at", columnDefinition = "TIMESTAMPTZ")
+    private OffsetDateTime scheduledAt;
+
+    private String location;  // optional textual location
+
+    @Enumerated(EnumType.STRING)
+    private ReminderState state;
+
+    @Enumerated(EnumType.STRING)
+    private ReminderSource source;
+
+    private String externalCalendarEventId; // e.g., Google Calendar event ID
+
+    @Column(name = "created_at",   columnDefinition = "TIMESTAMPTZ")
+    private OffsetDateTime createdAt;
+}
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/reminder/model/ReminderState.java:
+```
+package ru.gigastack.ai_reminder_back.reminder.model;
+
+public enum ReminderState {
+    ACTIVE,
+    FIRED,
+    CANCELLED
+}
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/reminder/model/ReminderSource.java:
+```
+package ru.gigastack.ai_reminder_back.reminder.model;
+
+public enum ReminderSource {
+    TELEGRAM,
+    WEB,
+    VOICE
+}
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/reminder/service/ReminderService.java:
+```
+package ru.gigastack.ai_reminder_back.reminder.service;
+
+import ru.gigastack.ai_reminder_back.reminder.dto.*;
+
+import java.util.List;
+
+public interface ReminderService {
+    ReminderResponse create(Long userId, ReminderRequest req);
+    ReminderResponse get(Long userId, Long id);
+    List<ReminderResponse> list(Long userId);
+    ReminderResponse update(Long userId, Long id, ReminderRequest req);
+    void delete(Long userId, Long id);
+}
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/reminder/service/ReminderServiceImpl.java:
+```
+package ru.gigastack.ai_reminder_back.reminder.service;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.gigastack.ai_reminder_back.common.NotFoundException;
+import ru.gigastack.ai_reminder_back.notification.model.OutboxNotification;
+import ru.gigastack.ai_reminder_back.notification.repository.OutboxRepository;
+import ru.gigastack.ai_reminder_back.reminder.dto.*;
+import ru.gigastack.ai_reminder_back.reminder.mapper.ReminderMapper;
+import ru.gigastack.ai_reminder_back.reminder.model.*;
+import ru.gigastack.ai_reminder_back.reminder.repository.ReminderRepository;
+
+import java.time.*;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class ReminderServiceImpl implements ReminderService {
+
+    private final ReminderRepository repository;
+    private final OutboxRepository outboxRepository;
+    private final ReminderMapper mapper;
+
+    @Override
+    @Transactional
+    public ReminderResponse create(Long userId, ReminderRequest req) {
+        Reminder reminder = mapper.toEntity(req);
+        reminder.setUserId(userId);
+        reminder.setState(ReminderState.ACTIVE);
+        reminder.setSource(ReminderSource.WEB);
+        reminder.setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC));
+        Reminder saved = repository.save(reminder);
+
+        // add outbox row
+        OutboxNotification on = OutboxNotification.builder()
+                .reminderId(saved.getId())
+                .userId(userId)
+                .payload("{}") // fill later
+                .processed(false)
+                .createdAt(ZonedDateTime.now(ZoneOffset.UTC))
+                .build();
+        outboxRepository.save(on);
+
+        return mapper.toDto(saved);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReminderResponse get(Long userId, Long id) {
+        Reminder r = repository.findById(id)
+                .filter(rem -> rem.getUserId().equals(userId))
+                .orElseThrow(() -> new NotFoundException("Reminder not found"));
+        return mapper.toDto(r);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ReminderResponse> list(Long userId) {
+        return repository.findByUserId(userId)
+                .stream()
+                .map(mapper::toDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public ReminderResponse update(Long userId, Long id, ReminderRequest req) {
+        Reminder reminder = repository.findById(id)
+                .filter(rem -> rem.getUserId().equals(userId))
+                .orElseThrow(() -> new NotFoundException("Reminder not found"));
+
+        reminder.setTitle(req.title());
+        reminder.setDescription(req.description());
+        reminder.setScheduledAt(req.scheduledAt());
+        reminder.setLocation(req.location());
+        Reminder saved = repository.save(reminder);
+        return mapper.toDto(saved);
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long userId, Long id) {
+        Reminder reminder = repository.findById(id)
+                .filter(rem -> rem.getUserId().equals(userId))
+                .orElseThrow(() -> new NotFoundException("Reminder not found"));
+        repository.delete(reminder);
+    }
+}
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/models/User.java:
+```
+package ru.gigastack.ai_reminder_back.models;
+
+import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
+
+
+@Entity
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "users")
+public class User implements UserDetails {
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_seq")
+    @SequenceGenerator(name = "user_id_seq", sequenceName = "user_id_seq", allocationSize = 1)
+    private Long id;
+
+    @Column(name = "username", unique = true, nullable = false)
+    private String username;
+
+    @Column(name = "password", nullable = false)
+    private String password;
+
+/*
+    @Column(name = "email", unique = true, nullable = false)
+    private String email;
+*/
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private Role role;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+}
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/models/Role.java:
+```
+package ru.gigastack.ai_reminder_back.models;
+
+public enum Role {
+    ROLE_USER, ROLE_ADMIN
+}
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/common/NotFoundException.java:
+```
+package ru.gigastack.ai_reminder_back.common;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public class NotFoundException extends RuntimeException {
+    public NotFoundException(String message) {
+        super(message);
+    }
+}
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/service/UserService.java:
+```
+package ru.gigastack.ai_reminder_back.service;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+import ru.gigastack.ai_reminder_back.models.Role;
+import ru.gigastack.ai_reminder_back.models.User;
+import ru.gigastack.ai_reminder_back.repository.UserRepository;
+
+@Service
+@RequiredArgsConstructor
+public class UserService {
+    private final UserRepository repository;
+
+    /**
+     * Сохранение пользователя
+     *
+     * @return сохраненный пользователь
+     */
+    public User save(User user) {
+        return repository.save(user);
+    }
+
+
+    /**
+     * Создание пользователя
+     *
+     * @return созданный пользователь
+     */
+    public User create(User user) {
+        if (repository.existsByUsername(user.getUsername())) {
+            // Заменить на свои исключения
+            throw new RuntimeException("Пользователь с таким именем уже существует");
+        }
+
+       /* if (repository.existsByEmail(user.getEmail())) {
+            throw new RuntimeException("Пользователь с таким email уже существует");
+        }*/
+
+        return save(user);
+    }
+
+    /**
+     * Получение пользователя по имени пользователя
+     *
+     * @return пользователь
+     */
+    public User getByUsername(String username) {
+        return repository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
+
+    }
+
+    /**
+     * Получение пользователя по имени пользователя
+     * <p>
+     * Нужен для Spring Security
+     *
+     * @return пользователь
+     */
+    public UserDetailsService userDetailsService() {
+        return this::getByUsername;
+    }
+
+    /**
+     * Получение текущего пользователя
+     *
+     * @return текущий пользователь
+     */
+    public User getCurrentUser() {
+        // Получение имени пользователя из контекста Spring Security
+        var username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return getByUsername(username);
+    }
+
+
+    /**
+     * Выдача прав администратора текущему пользователю
+     * <p>
+     * Нужен для демонстрации
+     */
+    @Deprecated
+    public void getAdmin() {
+        var user = getCurrentUser();
+        user.setRole(Role.ROLE_ADMIN);
+        save(user);
+    }
+}
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/controllers/AuthController.java:
+```
+package ru.gigastack.ai_reminder_back.controllers;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import ru.gigastack.ai_reminder_back.dto.JwtAuthenticationResponse;
+import ru.gigastack.ai_reminder_back.dto.SignInRequest;
+import ru.gigastack.ai_reminder_back.dto.SignUpRequest;
+import ru.gigastack.ai_reminder_back.security.AuthenticationService;
+import ru.gigastack.ai_reminder_back.service.UserService;
+
+@RestController
+@RequestMapping("/auth")
+@RequiredArgsConstructor
+@Tag(name = "Аутентификация")
+public class AuthController {
+
+    private final AuthenticationService authenticationService;
+    private final UserService           service;
+
+
+    @Operation(summary = "Регистрация пользователя")
+    @PostMapping("/sign-up")
+    public JwtAuthenticationResponse signUp(@RequestBody @Valid SignUpRequest request) {
+        return authenticationService.signUp(request);
+    }
+
+    @Operation(summary = "Авторизация пользователя")
+    @PostMapping("/sign-in")
+    public JwtAuthenticationResponse signIn(@RequestBody @Valid SignInRequest request) {
+        return authenticationService.signIn(request);
+    }
+
+
+    @Operation(
+            summary = "Пример – нужен авторизованный пользователь",
+            security = @SecurityRequirement(name = "BearerAuth")
+    )
+    @GetMapping
+    public String example() {
+        return "Hello, world!";
+    }
+
+    @Operation(
+            summary = "Пример – нужна роль ADMIN",
+            security = @SecurityRequirement(name = "BearerAuth")
+    )
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin")
+    public String exampleAdmin() {
+        return "Hello, admin!";
+    }
+
+    @Operation(
+            summary = "Получить роль ADMIN (для демонстрации)",
+            security = @SecurityRequirement(name = "BearerAuth")
+    )
+    @GetMapping("/get-admin")
+    public void getAdmin() {
+        service.getAdmin();
+    }
+}
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/exception/GlobalExceptionHandler.java:
+```
+package ru.gigastack.ai_reminder_back.exception;
+
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.time.OffsetDateTime;
+import java.util.stream.Collectors;
+
+/**
+ * Глобальный перехват ошибок MVC + Spring Security.
+ */
+@Slf4j
+@Order(Ordered.HIGHEST_PRECEDENCE)
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    /* ---------- 400: ошибки валидации ---------- */
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiError> handleValidation(
+            MethodArgumentNotValidException ex,
+            HttpServletRequest req) {
+
+        String msg = ex.getBindingResult()
+                .getFieldErrors().stream()
+                .map(this::fieldErrorToString)
+                .collect(Collectors.joining("; "));
+
+        return build(HttpStatus.BAD_REQUEST, msg, req, ex);
+    }
+
+    /* ---------- 401: проблемы аутентификации ---------- */
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiError> handleAuth(
+            AuthenticationException ex,
+            HttpServletRequest req) {
+
+        return build(HttpStatus.UNAUTHORIZED, ex.getMessage(), req, ex);
+    }
+
+    /* ---------- 500: всё остальное ---------- */
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiError> handleAll(
+            Exception ex,
+            HttpServletRequest req) {
+
+        return build(HttpStatus.INTERNAL_SERVER_ERROR,
+                "Internal error", req, ex);
+    }
+
+    /* ---------- util ---------- */
+
+    private ResponseEntity<ApiError> build(HttpStatus status,
+                                           String message,
+                                           HttpServletRequest req,
+                                           Exception ex) {
+
+        ApiError body = ApiError.builder()
+                .timestamp(OffsetDateTime.now())
+                .status(status.value())
+                .error(status.getReasonPhrase())
+                .message(message)
+                .path(req.getMethod() + " " + req.getRequestURI())
+                .build();
+
+        if (status.is5xxServerError()) {
+            log.error("{} → {} {}", body.getPath(), status.value(), message, ex);
+        } else {
+            log.warn("{} → {} {}", body.getPath(), status.value(), message);
+        }
+
+        return ResponseEntity.status(status).body(body);
+    }
+
+    private String fieldErrorToString(FieldError e) {
+        return "%s: %s".formatted(e.getField(), e.getDefaultMessage());
+    }
+}
+
+```
+
+Contents of src/main/java/ru/gigastack/ai_reminder_back/exception/ApiError.java:
+```
+package ru.gigastack.ai_reminder_back.exception;
+
+import lombok.Builder;
+import lombok.Data;
+
+import java.time.OffsetDateTime;
+
+/**
+ * Единый формат отправки ошибок клиенту.
+ */
+@Data
+@Builder
+public class ApiError {
+
+    /** Момент формирования ответа */
+    private OffsetDateTime timestamp;
+
+    /** HTTP-код */
+    private int            status;
+
+    /** Текстовое название статуса (Bad Request, Forbidden …) */
+    private String         error;
+
+    /** Детали ошибки для клиента */
+    private String         message;
+
+    /** Запрошенный путь */
+    private String         path;
+}
+
+```
+
