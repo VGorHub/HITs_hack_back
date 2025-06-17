@@ -25,14 +25,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = resolveToken(request);
             if (StringUtils.hasText(token) && tokenProvider.validate(token)) {
 
+                String username = tokenProvider.getUsername(token); // subject
+                Long   userId   = tokenProvider.getUserId(token);   // claim "id"
+
                 var auth = new UsernamePasswordAuthenticationToken(
-                        tokenProvider.getUserId(token),      // principal
-                        null,                                // credentials
-                        tokenProvider.getAuthorities(token)  // roles
+                        username,                 // principal  ← ВСЕГДА username
+                        null,                     // credentials
+                        tokenProvider.getAuthorities(token)
                 );
-                auth.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
+                auth.setDetails(userId);          // details     ← ВСЕГДА id
+                auth.setDetails(new WebAuthenticationDetailsSource()
+                        .buildDetails(request));   // если нужен WebDetails — можно в Map
+
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
         } catch (Exception ex) {

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.gigastack.ai_reminder_back.exception.ApiError;
 import ru.gigastack.ai_reminder_back.reminder.dto.*;
 import ru.gigastack.ai_reminder_back.reminder.service.ReminderService;
+import ru.gigastack.ai_reminder_back.service.UserService;
 
 import java.util.List;
 
@@ -28,20 +29,19 @@ import java.util.List;
 public class ReminderController {
 
     private final ReminderService service;
-
+    private final UserService userService;
     /* ---------- util ---------- */
 
     /** Достаём userId, который фильтр положил в principal (Long или String). */
     private Long getUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || auth.getPrincipal() == null) {
-            throw new AccessDeniedException("Unauthenticated");
-        }
+        if (auth == null) throw new AccessDeniedException("Unauthenticated");
 
-        Object principal = auth.getPrincipal();
-        return (principal instanceof Long id)
-                ? id
-                : Long.valueOf(principal.toString());
+        Object det = auth.getDetails();
+        if (det instanceof Long id) return id;
+
+        // safety-fallback: username → id
+        return userService.getByUsername(auth.getName()).getId();
     }
 
     /* ---------- create ---------- */

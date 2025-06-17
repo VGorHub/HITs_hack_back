@@ -477,6 +477,8 @@ dependencies {
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+	implementation 'com.corundumstudio.socketio:netty-socketio:1.7.19'
 }
 
 tasks.named('test')       { outputs.dir snippetsDir; useJUnitPlatform() }
@@ -785,7 +787,7 @@ socketio:
 
 n8n:
   webhook:
-    url: ${N8N_WEBHOOK_URL:http://localhost:5678/webhook/ai-reminder}
+    url: ${N8N_WEBHOOK_URL:https://n8n.gigafs.v6.navy/webhook-test/webhook/ai-reminder}
 
 
 
@@ -834,6 +836,7 @@ server:
 # более подробные логи для разработки
 logging:
   level:
+    ru.gigastack.ai_reminder_back: DEBUG
     root: INFO
     org.springframework.web: DEBUG
 
@@ -1098,7 +1101,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
                 )
         ),
         servers = {
-                @Server(url = "https://192.168.100.58:8443", description = "Local DEV"),
+                @Server(url = "https://192.168.1.3:8443", description = "Local DEV"),
                 @Server(url = "https://api.ai-reminder.dev", description = "Prod")
         }
 )
@@ -1782,6 +1785,7 @@ public class OutboxNotifier {
     @Scheduled(fixedDelay = 5_000)
     @Transactional
     public void dispatch() {
+        log.debug("[outbox] dispatch tick");
         repo.findReady(OffsetDateTime.now(ZoneOffset.UTC)).forEach(this::sendAndMark);
     }
 
@@ -2381,9 +2385,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * Embedded Socket.IO (Netty) server.
- */
+/** Встроенный (embedded) сервер Socket.IO на Netty. */
 @Configuration
 @Slf4j
 public class SocketIOConfig {
@@ -2393,14 +2395,13 @@ public class SocketIOConfig {
 
     @Bean(destroyMethod = "stop")
     public SocketIOServer socketIOServer() {
-        com.corundumstudio.socketio.Configuration cfg =
-                new com.corundumstudio.socketio.Configuration();
+        var cfg = new com.corundumstudio.socketio.Configuration();
         cfg.setPort(port);
-        cfg.setOrigin("*");
+        cfg.setOrigin("*");                // CORS: любой origin
         return new SocketIOServer(cfg);
     }
 
-    /** Авто-старт сервера после поднятия Spring-контекста. */
+    /** Авто-старт после инициализации Spring-контекста. */
     @Bean
     public ApplicationRunner runner(SocketIOServer server) {
         return args -> {
@@ -2421,7 +2422,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.gigastack.ai_reminder_back.notification.dto.ReminderNotification;
 
-/** Утилита для отправки событий в Socket.IO room «user-{id}». */
+/** Отправка событий в комнату «user-{id}». */
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -2449,7 +2450,7 @@ import org.springframework.stereotype.Component;
 import ru.gigastack.ai_reminder_back.security.JwtTokenProvider;
 
 /**
- * Проверка JWT (?token=…) при подключении и помещение клиента
+ * Валидация JWT (?token=…) и помещение клиента
  * в комнату «user-{id}».
  */
 @Component
@@ -2465,7 +2466,7 @@ public class SocketIOListener {
 
         server.addConnectListener(client -> {
             String token = client.getHandshakeData().getSingleUrlParam("token");
-            if (token == null || !tokenProvider.validate(token)) {   // ← фикс
+            if (token == null || !tokenProvider.validate(token)) {          // ← validate()
                 client.disconnect();
                 log.warn("[ws] rejected – bad token");
                 return;
@@ -2475,11 +2476,11 @@ public class SocketIOListener {
             log.debug("[ws] {} joined {}", client.getSessionId(), room(userId));
         });
 
-        server.addDisconnectListener(client ->
-                log.debug("[ws] {} disconnected", client.getSessionId()));
+        server.addDisconnectListener(c ->
+                log.debug("[ws] {} disconnected", c.getSessionId()));
     }
 
-    /** Имя комнаты «user-{id}» */
+    /** room-helper: «user-{id}» */
     public static String room(Long userId) {
         return "user-" + userId;
     }

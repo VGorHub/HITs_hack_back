@@ -62,7 +62,7 @@ socketio:
 
 n8n:
   webhook:
-    url: ${N8N_WEBHOOK_URL:http://localhost:5678/webhook/ai-reminder}
+    url: ${N8N_WEBHOOK_URL:https://n8n.gigafs.v6.navy/webhook/webhook/ai-reminder}
 
 
 
@@ -111,5 +111,6 @@ server:
 # более подробные логи для разработки
 logging:
   level:
+    ru.gigastack.ai_reminder_back: DEBUG
     root: INFO
     org.springframework.web: DEBUG

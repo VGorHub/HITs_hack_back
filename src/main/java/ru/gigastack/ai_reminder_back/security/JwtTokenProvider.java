@@ -25,7 +25,9 @@ public class JwtTokenProvider {
     public Long getUserId(String token) {
         return jwtService.getUserId(token);
     }
-
+    public String getUsername(String token) {          // новый метод
+        return jwtService.extractUserName(token);
+    }
     public Collection<? extends GrantedAuthority> getAuthorities(String token) {
         // из обёртки JwtService получаем роль строкой
         String role = jwtService.getAuthorities(token);   // ROLE_USER, ROLE_ADMIN …

@@ -1,6 +1,7 @@
 package ru.gigastack.ai_reminder_back.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -72,9 +73,19 @@ public class UserService {
      * @return текущий пользователь
      */
     public User getCurrentUser() {
-        // Получение имени пользователя из контекста Spring Security
-        var username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return getByUsername(username);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) throw new UsernameNotFoundException("Unauthenticated");
+
+        // сначала пытаемся по id, который гарантированно лежит в details
+        Object det = auth.getDetails();
+        if (det instanceof Long id) {
+            return repository.findById(id)
+                    .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
+        }
+
+        // fallback: ищем по username (principal)
+        return repository.findByUsername(auth.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
     }
 
 
