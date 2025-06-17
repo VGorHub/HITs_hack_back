@@ -8,7 +8,6 @@ import ru.gigastack.ai_reminder_back.notification.service.WebSocketGateway;
 
 @Slf4j
 @Component
-@Primary                   // если позже появится реальный бин — уберёшь эту аннотацию
 public class WebSocketGatewayNoOp implements WebSocketGateway {
 
     @Override
