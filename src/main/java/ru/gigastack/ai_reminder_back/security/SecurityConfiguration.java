@@ -57,6 +57,8 @@ public class SecurityConfiguration {
                         .requestMatchers("/auth/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/favicon.ico",
                                 "/internal/telegram/chat",
                                 "/internal/telegram/user-info").permitAll()
                         .requestMatchers(HttpMethod.GET, "/ws/**").permitAll()

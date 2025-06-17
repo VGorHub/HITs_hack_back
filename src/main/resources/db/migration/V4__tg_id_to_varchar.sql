@@ -1,5 +1,0 @@
-ALTER TABLE users
-  ALTER COLUMN tg_id TYPE VARCHAR(64);
-
-ALTER TABLE telegram_chats
-  ALTER COLUMN tg_id TYPE VARCHAR(64);

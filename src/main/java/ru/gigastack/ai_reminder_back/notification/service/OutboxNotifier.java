@@ -24,7 +24,6 @@ public class OutboxNotifier {
     private final OutboxRepository       repo;
     private final UserRepository         userRepo;
     private final TelegramChatRepository chatRepo;
-    private final WebSocketGateway       webSocketGateway;
     private final TelegramGateway        telegramGateway;
     /** ← берём уже настроенный spring-овский mapper (JavaTimeModule + ISO-8601) */
     private final ObjectMapper           mapper;
@@ -41,12 +40,7 @@ public class OutboxNotifier {
         boolean ok = true;
 
         /* -------- WebSocket -------- */
-        try {
-            webSocketGateway.pushToUser(on.getUserId(), payload);
-        } catch (Exception e) {
-            ok = false;
-            log.error("WS error, reminderId={}", on.getReminderId(), e);
-        }
+
 
         /* -------- Telegram -------- */
         try {

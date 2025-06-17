@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    url:      ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+  flyway:
+    baseline-on-migrate: true
+    baseline-version: 0
+
+server:
+  port: ${SERVER_PORT:8443}
+  address: 0.0.0.0
+  ssl:
+    enabled: true
+    key-store: file:/app/keystore.p12
+    key-store-password: ${KEY_STORE_PASSWORD}
+    key-store-type: PKCS12
+    key-alias: ai-reminder
+
+token:
+  signing:
+    key: ${TOKEN_SIGNING_KEY}
+
+n8n:
+  webhook:
+    url: ${N8N_WEBHOOK_URL}

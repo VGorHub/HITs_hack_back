@@ -1,3 +1,4 @@
+
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.0'
@@ -31,7 +32,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	// switched from Spring WS/STOMP to Socket.IO
+	implementation 'com.corundumstudio.socketio:netty-socketio:1.7.19'
+
 	implementation 'org.flywaydb:flyway-core'
 	implementation 'org.flywaydb:flyway-database-postgresql'
 	runtimeOnly 'org.postgresql:postgresql'
@@ -54,7 +58,6 @@ dependencies {
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-
 }
 
 tasks.named('test') {
@@ -66,6 +69,7 @@ tasks.named('asciidoctor') {
 	inputs.dir snippetsDir
 	dependsOn test
 }
+
 liquibase {
 	activities.register("main") {
 		url = "jdbc:postgresql://localhost:5432/ai_reminder"
