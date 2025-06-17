@@ -11,7 +11,6 @@ import ru.gigastack.ai_reminder_back.notification.service.WebSocketGateway;
 
 @Slf4j
 @Component
-@Primary      // переопределяет No-Op-бин
 @RequiredArgsConstructor
 public class WebSocketGatewayStomp implements WebSocketGateway {
 

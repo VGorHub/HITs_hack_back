@@ -11,6 +11,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.gigastack.ai_reminder_back.common.ConflictException;
 import ru.gigastack.ai_reminder_back.common.NotFoundException;
 
 import java.time.OffsetDateTime;
@@ -92,5 +93,11 @@ public class GlobalExceptionHandler {
 
     private String fieldErrorToString(FieldError e) {
         return "%s: %s".formatted(e.getField(), e.getDefaultMessage());
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ApiError> handleConflict(
+            ConflictException ex, HttpServletRequest req) {
+        return build(HttpStatus.CONFLICT, ex.getMessage(), req, ex);
     }
 }

@@ -9,6 +9,8 @@ import ru.gigastack.ai_reminder_back.models.Role;
 import ru.gigastack.ai_reminder_back.models.User;
 import ru.gigastack.ai_reminder_back.repository.UserRepository;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -86,5 +88,14 @@ public class UserService {
         var user = getCurrentUser();
         user.setRole(Role.ROLE_ADMIN);
         save(user);
+    }
+
+
+    public boolean existsByTgId(String tgId) {          // ← String
+        return repository.existsByTgId(tgId);
+    }
+
+    public Optional<User> findByTgId(String tgId) {     // ← String
+        return repository.findByTgId(tgId);
     }
 }

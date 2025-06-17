@@ -14,16 +14,24 @@ yaml server:
   address: 0.0.0.0
   port: 8080
 
+server:
+  port: 8443            # любой свободный
+  ssl:
+    enabled: true
+    key-store: classpath:keystore.p12
+    key-store-password: changeit
+    key-store-type: PKCS12
+    key-alias: ai-reminder
 token:
   signing:
     key: 53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327855
 
-telegram:
-  bot:
-    username: ai_reminder_bot      # @username бота
-    token:    ${TG_BOT_TOKEN}      # храните секрет в ENV-переменной
+n8n:
+  webhook:
+    url: https://n8n.gigafs.v6.navy/webhook-test/webhook/ai-reminder
+
 websocket:
-  endpoint: /ws                   # URL для подключения SockJS
+  endpoint: /ws          #  <–– любой путь, например /ws
   prefix:
-    app:   /app                   # куда клиент посылает
-    topic: /topic                 # откуда клиент слушает
+    app:   /app
+    topic: /topic

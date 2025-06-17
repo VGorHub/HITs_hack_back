@@ -23,8 +23,10 @@ public class ReminderServiceImpl implements ReminderService {
     private final ReminderRepository repository;
     private final OutboxRepository   outboxRepository;
     private final ReminderMapper     mapper;
-    private final ObjectMapper mapperJson = new ObjectMapper();  // свой ObjectMapper
+    /** Берём уже настроенный spring-овский mapper (JavaTimeModule + ISO-8601). */
+    private final ObjectMapper       mapperJson;
 
+    /* ---------- create ---------- */
     @Override
     @Transactional
     public ReminderResponse create(Long userId, ReminderRequest req) {
@@ -37,21 +39,24 @@ public class ReminderServiceImpl implements ReminderService {
 
         Reminder saved = repository.save(reminder);
 
-        // --- формируем payload для каналов доставки -----------------
-        ReminderNotification dto = ReminderNotification.builder()
-                .reminderId(saved.getId())
-                .userId(userId)
-                .title(saved.getTitle())
-                .description(saved.getDescription())
-                .scheduledAt(saved.getScheduledAt())
-                .build();
+        /* ––– payload для каналов доставки ––– */
+        ReminderNotification dto = new ReminderNotification(
+                saved.getId(),
+                userId,
+                saved.getTitle(),
+                saved.getDescription(),
+                saved.getScheduledAt(),
+                saved.getLocation()
+        );
 
-        String json = "{}";
+        String json;
         try {
             json = mapperJson.writeValueAsString(dto);
-        } catch (Exception ignored) { /* fallback оставим "{}" */ }
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to serialize ReminderNotification", e);
+        }
 
-        // --- outbox --------------------------------------------------
+        /* ––– outbox ––– */
         OutboxNotification on = OutboxNotification.builder()
                 .reminderId(saved.getId())
                 .userId(userId)

@@ -50,7 +50,9 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**",
                                 "/swagger-ui/**",
-                                "/v3/api-docs/**").permitAll()
+                                "/v3/api-docs/**",
+                                "/internal/telegram/chat",
+                                "/internal/telegram/user-info").permitAll()
                         .anyRequest().authenticated())
 
                 .exceptionHandling(ex -> ex

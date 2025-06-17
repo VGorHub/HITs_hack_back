@@ -37,7 +37,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
                 )
         ),
         servers = {
-                @Server(url = "http://192.168.100.58:8080", description = "Local DEV"),
+                @Server(url = "https://192.168.100.58:8443", description = "Local DEV"),
                 @Server(url = "https://api.ai-reminder.dev", description = "Prod")
         }
 )

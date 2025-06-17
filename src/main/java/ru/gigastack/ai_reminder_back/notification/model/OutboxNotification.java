@@ -6,11 +6,7 @@ import java.time.*;
 
 @Entity
 @Table(name = "outbox_notifications")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class OutboxNotification {
 
     @Id
@@ -18,12 +14,12 @@ public class OutboxNotification {
     private Long id;
 
     private Long reminderId;
-
     private Long userId;
 
-    private String payload; // JSON payload for delivery
+    /** JSON-payload теперь хранится в TEXT, чтобы не обрезать длинные строки */
+    @Column(columnDefinition = "TEXT")
+    private String payload;
 
     private boolean processed;
-
     private ZonedDateTime createdAt;
 }
