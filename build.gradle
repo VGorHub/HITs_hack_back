@@ -51,7 +51,7 @@ dependencies {
 
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
-	implementation 'com.corundumstudio.socketio:netty-socketio:1.7.19'
+	implementation("com.corundumstudio.socketio:netty-socketio:2.0.13")
 }
 
 tasks.named('test')       { outputs.dir snippetsDir; useJUnitPlatform() }
