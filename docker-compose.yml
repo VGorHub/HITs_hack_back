@@ -28,18 +28,15 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "8443:8443"
+      - "8080:8080"
       - "9092:9092"
     environment:
       # Подтягиваем vars вместо «жёстких» значений
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/ai_reminder
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
-      N8N_WEBHOOK_URL: https://n8n.gigafs.v6.navy/webhook/webhook/ai-reminder
+      N8N_WEBHOOK_URL: http://n8n.gigafs.v6.navy/webhook/webhook/ai-reminder
       TOKEN_SIGNING_KEY: 53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327855
-      KEY_STORE_PASSWORD: changeit
-    volumes:
-      - ./keystore.p12:/app/keystore.p12:ro
 
 volumes:
   pgdata:

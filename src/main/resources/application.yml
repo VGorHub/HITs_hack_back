@@ -1,28 +1,12 @@
 ###############################################################################
-# 📚 Application configuration for **ai‑reminder‑back**
+# 📚 Application configuration for **ai‑reminder‑back** (единый конфиг без профилей)
 # ─────────────────────────────────────────────────────────────────────────────
-# Структура файла:
-#   ➊ COMMON – применяется во всех профилях.
-#   ➋ PROD   – контейнеры / k8s / staging / production.
-#   ➌ LOCAL  – разработка на ноутбуке.
+# Работает и локально, и в Docker. Только HTTP, без SSL.
 #
-# → Все значения можно переопределить переменными окружения
-#   вида  ENV_NAME  —>  spring.property.name
-#
-#   Например:
-#     N8N_WEBHOOK_URL   →  n8n.webhook.url
-#     SERVER_PORT       →  server.port
-#
-# → Запуск
-#     # локально
-#     SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
-#
-#     # docker‑compose (prod‑profile)
-#     docker compose up -d   # .env выставляет PROD‑переменные
-###############################################################################
-
-###############################################################################
-# ➊ COMMON (работает во всех профилях)
+# → Запуск:
+#     ./gradlew bootRun
+#     или
+#     docker compose up -d
 ###############################################################################
 
 spring:
@@ -30,7 +14,7 @@ spring:
     name: ai-reminder
 
   datasource:
-    url:      ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/ai_reminder}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/ai_reminder}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD:postgres}
     hikari:
@@ -38,79 +22,33 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate          # Flyway рулит схемой, не даём Hibernate менять её
+      ddl-auto: validate
     open-in-view: false
+
   flyway:
     enabled: true
 
 server:
-  port: ${SERVER_PORT:8443}        # может быть переопределён в профилях
+  port: ${SERVER_PORT:8080}  # HTTP-порт
   shutdown: graceful
+  ssl:
+    enabled: false           # ❌ отключаем HTTPS
 
 logging:
   level:
     root: INFO
+    org.springframework.web: DEBUG
+    ru.gigastack.ai_reminder_back: DEBUG
 
-# JWT / access‑tokens
 token:
   signing:
     key: ${TOKEN_SIGNING_KEY:53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327855}
 
-# >>> WebSocket / Socket.IO
+# WebSocket / Socket.IO
 socketio:
   port: ${SOCKETIO_PORT:9092}
 
+# Webhook n8n
 n8n:
   webhook:
-    url: ${N8N_WEBHOOK_URL:https://n8n.gigafs.v6.navy/webhook/webhook/ai-reminder}
-
-
-
-###############################################################################
-# ➋ PROD profile  →  SPRING_PROFILES_ACTIVE=prod
-###############################################################################
----
-spring:
-  config:
-    activate:
-      on-profile: prod
-
-# В проде порт чаще задаётся через переменную SERVER_PORT в контейнере
-server:
-  port: ${SERVER_PORT:8443}
-  ssl:
-    enabled: true
-    key-store: file:/app/keystore.p12      # путь внутри контейнера
-    key-store-password: ${KEY_STORE_PASSWORD}
-    key-store-type: PKCS12
-    key-alias: ai-reminder
-
-logging:
-  level:
-    root: INFO
-    org.springframework.web: WARN
-
-###############################################################################
-# ➌ LOCAL profile →  SPRING_PROFILES_ACTIVE=local
-###############################################################################
----
-spring:
-  config:
-    activate:
-      on-profile: local
-
-server:
-  port: 8443
-  ssl:
-    enabled: true
-    key-store: classpath:keystore.p12        # положи файл в src/main/resources
-    key-store-password: changeit             # или свой пароль
-    key-store-type: PKCS12
-    key-alias: ai-reminder
-
-# более подробные логи для разработки
-logging:
-  level:
-    ru.gigastack.ai_reminder_back: DEBUG
-    root: INFO
-    org.springframework.web: DEBUG
+    url: ${N8N_WEBHOOK_URL:http://n8n.gigafs.v6.navy/webhook/webhook/ai-reminder}

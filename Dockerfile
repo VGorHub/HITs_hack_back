@@ -12,11 +12,11 @@ WORKDIR /app
 # Только jar: keystore монтируем через docker-compose
 COPY --from=builder /workspace/build/libs/*.jar app.jar
 
-# JVM-опции: 8443 порт и prod–профиль
+# JVM-опции: 8080 порт и prod–профиль
 ENV JAVA_TOOL_OPTIONS="\
- -Dserver.port=8443 \
+ -Dserver.port=8080 \
  -Dspring.profiles.active=prod"
 
-EXPOSE 8443
+EXPOSE 8080
 EXPOSE 9092
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
